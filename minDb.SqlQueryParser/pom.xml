@@ -7,10 +7,10 @@
     <artifactId>minDb</artifactId>
     <version>1.0</version>
   </parent>
-  <groupId>minDb.SqlQuery</groupId>
-  <artifactId>minDb.SqlQuery</artifactId>
+  <groupId>minDb.SqlQueryParser</groupId>
+  <artifactId>minDb.SqlQueryParser</artifactId>
   <version>1.0</version>
-  <name>minDb.SqlQuery</name>
+  <name>minDb.SqlQueryParser</name>
   <url>http://maven.apache.org</url>
 
   <dependencies>

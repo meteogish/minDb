@@ -9,7 +9,7 @@
   <url>http://maven.apache.org</url>
   <modules>
     <module>minDb.Core</module>
-    <module>minDb.SqlQuery</module>
+    <module>minDb.SqlQueryParser</module>
     <module>ConsoleEntry</module>
   </modules>
 </project>

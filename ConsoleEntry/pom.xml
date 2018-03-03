@@ -22,8 +22,8 @@
     </dependency>
 
     <dependency>
-      <groupId>minDb.SqlQuery</groupId>
-      <artifactId>minDb.SqlQuery</artifactId>
+      <groupId>minDb.SqlQueryParser</groupId>
+      <artifactId>minDb.SqlQueryParser</artifactId>
       <version>1.0</version>
     </dependency>
   </dependencies>
