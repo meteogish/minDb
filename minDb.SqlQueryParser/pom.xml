@@ -12,7 +12,6 @@
   <version>1.0</version>
   <name>minDb.SqlQueryParser</name>
   <url>http://maven.apache.org</url>
-
   <dependencies>
     <dependency>
       <groupId>minDb.Core</groupId>
@@ -20,5 +19,4 @@
       <version>1.0</version>
     </dependency>
   </dependencies>
-
 </project>
