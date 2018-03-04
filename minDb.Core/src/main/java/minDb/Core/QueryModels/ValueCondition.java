@@ -2,10 +2,10 @@ package minDb.Core.QueryModels;
 
 public class ValueCondition<T> extends Condition {
 	private Column _column;
-	private Compare _compare;
+	private ValueCompare _compare;
     private T _value;
     
-    public ValueCondition(Table table, String column, Compare compare, T value){
+    public ValueCondition(Table table, String column, ValueCompare compare, T value){
 		_column = new Column(table, column);
         _compare = compare;
         _value = value;
@@ -21,7 +21,7 @@ public class ValueCondition<T> extends Condition {
 	/**
 	 * @return the _compare
 	 */
-	public Compare get_compare() {
+	public ValueCompare get_compare() {
 		return _compare;
 	}
 

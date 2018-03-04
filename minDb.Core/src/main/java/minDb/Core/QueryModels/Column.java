@@ -1,7 +1,5 @@
 package minDb.Core.QueryModels;
 
-import java.awt.image.CropImageFilter;
-
 /**
  * Column
  */

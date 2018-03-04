@@ -1,21 +1,11 @@
 package minDb.Core.QueryModels;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Join
  */
 public class Join {
     private Table _table;
-    private List<ColumnCondition> _conditions = new ArrayList<ColumnCondition>();
-
-    /**
-     * @return the _conditions
-     */
-    public List<ColumnCondition> get_conditions() {
-        return _conditions;
-    }
+    private Condition _condition;
 
     /**
      * @return the _table
@@ -28,7 +18,14 @@ public class Join {
         _table = table;
     }
 
-    public void On(Table leftTable, String leftColumn, Compare compare, Table rightTable, String rightColumn) {
-
+    public <T> void On(String leftColumn, ValueCompare compare, Table rightTable, String rightColumn) {
+        _condition = new ColumnCondition(_table, leftColumn, compare, rightTable, rightColumn);
     }
+
+	/**
+	 * @return the _condition
+	 */
+	public Condition get_condition() {
+		return _condition;
+	}
 }
