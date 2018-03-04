@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Query
  */
-public class Query {
+public class SelectQuery extends BaseQuery {
     // private List<Column> _select = new ArrayList<Column>();
     // private List<Table> _from = new ArrayList<Table>();
     // private List<Join> _join = new ArrayList<Join>();     
@@ -14,7 +14,6 @@ public class Query {
     // private Integer _top;
 
     private List<Column> _select = new ArrayList<Column>();
-    private List<Table> _from = new ArrayList<Table>();
     private List<Join> _join = new ArrayList<Join>();     
     private List<Condition> _where = new ArrayList<Condition>();
     private Integer _top;
@@ -38,8 +37,8 @@ public class Query {
 	/**
 	 * @return the _from
 	 */
-	public List<Table> get_from() {
-		return _from;
+	public Table get_from() {
+		return get_table();
 	}
 
 	/**
@@ -56,9 +55,9 @@ public class Query {
 		return _top;
 	}
     
-    public Query(List<Column> select, List<Table> from, List<Join> join, List<Condition> where, Integer top) {
+    public SelectQuery(List<Column> select, Table from, List<Join> join, List<Condition> where, Integer top) {
+		super(from);
         _select = select;
-        _from = from;
         _join = join;
         _where = where;
         _top = top;

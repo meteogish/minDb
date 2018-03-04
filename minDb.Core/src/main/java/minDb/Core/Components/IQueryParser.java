@@ -1,10 +1,10 @@
 package minDb.Core.Components;
 
-import minDb.Core.QueryModels.Query;
+import minDb.Core.QueryModels.BaseQuery;
 
 /**
  * IQueryParser
  */
 public interface IQueryParser {
-    Query parse(String statement);
+    BaseQuery parse(String statement);
 }
