@@ -1,6 +1,5 @@
 package minDb.QueryBuilder;
 
-import net.sf.jsqlparser.expression.Alias;
 import net.sf.jsqlparser.schema.Table;
 import net.sf.jsqlparser.statement.select.FromItemVisitor;
 import net.sf.jsqlparser.statement.select.LateralSubSelect;

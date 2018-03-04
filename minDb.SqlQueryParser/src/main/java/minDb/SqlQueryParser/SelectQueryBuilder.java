@@ -18,7 +18,6 @@ import net.sf.jsqlparser.statement.select.Select;
 public class SelectQueryBuilder {
     private FromTableFinder _fromTableFinder = new FromTableFinder();
 
-
     private List<Column> _select = new ArrayList<Column>();
     private List<Join> _join = new ArrayList<Join>();   
 	private Condition _where;
@@ -32,28 +31,11 @@ public class SelectQueryBuilder {
 
         // PlainSelect plainSelect = (PlainSelect) selectStatement.getSelectBody();
         _from = _fromTableFinder.FindFromTable(selectStatement);
-        
-        // plainSelect.accept(new SelectVisitorAdapter() {
-        //     @Override
-        //     public void visit(PlainSelect plainSelect) {
-        //         System.out.println("inside selectBody");
-        //         plainSelect.getFromItem().accept(new FromItemVisitorAdapter(){
-        //             @Override
-        //             public void visit(Table table)
-        //             {
-        //                 System.out.println("inside tableVisit");
-        //                 Alias alias = table.getAlias();
-        //                 String name = table.getFullyQualifiedName();
-        //                 _from = new minDb.Core.QueryModels.Table(table.getName(), alias.getName());
-        //             }
-        //         });;
-        //     }
-        // });
         return build();
     }
 
     private SelectQuery build() {
-        return null;
+        return new SelectQuery(_select, _from, _join, _where, _top);
     }
 
 }
