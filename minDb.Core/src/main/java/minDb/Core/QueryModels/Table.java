@@ -1,5 +1,8 @@
 package minDb.Core.QueryModels;
 
+import minDb.Core.Exceptions.ValidationException;
+import minDb.Extensions.StringExtenstions;
+
 /**
  * Table
  */
@@ -23,11 +26,16 @@ public class Table {
     }
 
 
-    public Table(String name) {
+    public Table(String name) throws ValidationException {
        this(name, null);
     }
 
-    public Table(String name, String alias) {
+    public Table(String name, String alias) throws ValidationException {
+        if(StringExtenstions.IsNullOrEmpty(name))
+		{
+			throw new ValidationException("Table name is null/empty");
+        }
+        
         _name = name;
         _alias = alias;
     } 

@@ -7,7 +7,7 @@ import java.util.List;
  * Query
  */
 public class SelectQuery extends BaseQuery {
-    private List<Column> _select = new ArrayList<Column>();
+    private List<SelectColumn> _select = new ArrayList<SelectColumn>();
     private List<Join> _join = new ArrayList<Join>();   
 	private Condition _where;
 	
@@ -16,7 +16,7 @@ public class SelectQuery extends BaseQuery {
 	/**
 	 * @return the _select
 	 */
-	public List<Column> get_select() {
+	public List<SelectColumn> get_select() {
 		return _select;
 	}
 
@@ -50,7 +50,7 @@ public class SelectQuery extends BaseQuery {
 		return _top;
 	}
     
-    public SelectQuery(List<Column> select, Table from, List<Join> join, Condition where, Integer top) {
+    public SelectQuery(List<SelectColumn> select, Table from, List<Join> join, Condition where, Integer top) {
 		super(from);
         _select = select;
         _join = join;

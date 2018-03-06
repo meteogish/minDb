@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import minDb.Core.Exceptions.ValidationException;
-import minDb.Core.QueryModels.Column;
 import minDb.Core.QueryModels.Condition;
 import minDb.Core.QueryModels.Join;
+import minDb.Core.QueryModels.SelectColumn;
 import minDb.Core.QueryModels.SelectQuery;
 import minDb.QueryBuilder.FromTableFinder;
 import minDb.QueryBuilder.SelectColumnsFinder;
@@ -20,7 +20,7 @@ public class SelectQueryBuilder {
     private FromTableFinder _fromTableFinder = new FromTableFinder();
     private SelectColumnsFinder _selectColumnsFinder = new SelectColumnsFinder();
 
-    private List<Column> _select = new ArrayList<Column>();
+    private List<SelectColumn> _select = new ArrayList<SelectColumn>();
     private List<Join> _join = new ArrayList<Join>();   
 	private Condition _where;
 	private minDb.Core.QueryModels.Table _from;
@@ -31,9 +31,9 @@ public class SelectQueryBuilder {
             throw new ValidationException("Statement is not a plain select statement.");
         }
 
-        // PlainSelect plainSelect = (PlainSelect) selectStatement.getSelectBody();
-        _from = _fromTableFinder.FindFromTable(selectStatement);
-        _select = _selectColumnsFinder.getSelectColumns(selectStatement, _from);
+        PlainSelect plainSelect = (PlainSelect) selectStatement.getSelectBody();
+        _from = _fromTableFinder.FindFromTable(plainSelect);
+        _select = _selectColumnsFinder.getSelectColumns(plainSelect);
         return build();
     }
 

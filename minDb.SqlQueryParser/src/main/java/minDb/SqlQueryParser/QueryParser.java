@@ -17,7 +17,6 @@ public class QueryParser implements IQueryParser {
     {
         Statement statement;
         try {
-            
             statement = CCJSqlParserUtil.parse(str);
             return new SelectQueryBuilder().buildQuery((Select)statement);
             // statement.accept(new StatementVisitorAdapter(){
