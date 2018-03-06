@@ -9,6 +9,7 @@ import minDb.Core.QueryModels.Join;
 import minDb.Core.QueryModels.SelectColumn;
 import minDb.Core.QueryModels.SelectQuery;
 import minDb.QueryBuilder.FromTableFinder;
+import minDb.QueryBuilder.JoinsFinder;
 import minDb.QueryBuilder.SelectColumnsFinder;
 import net.sf.jsqlparser.statement.select.PlainSelect;
 import net.sf.jsqlparser.statement.select.Select;
@@ -19,6 +20,8 @@ import net.sf.jsqlparser.statement.select.Select;
 public class SelectQueryBuilder {
     private FromTableFinder _fromTableFinder = new FromTableFinder();
     private SelectColumnsFinder _selectColumnsFinder = new SelectColumnsFinder();
+    private JoinsFinder _joinsFinder = new JoinsFinder();
+
 
     private List<SelectColumn> _select = new ArrayList<SelectColumn>();
     private List<Join> _join = new ArrayList<Join>();   
@@ -30,10 +33,11 @@ public class SelectQueryBuilder {
         if (!(selectStatement.getSelectBody() instanceof PlainSelect)) {
             throw new ValidationException("Statement is not a plain select statement.");
         }
-
+        
         PlainSelect plainSelect = (PlainSelect) selectStatement.getSelectBody();
         _from = _fromTableFinder.FindFromTable(plainSelect);
         _select = _selectColumnsFinder.getSelectColumns(plainSelect);
+        _join = _joinsFinder.getCoreJoinsFromParsed(plainSelect.getJoins(), _from);
         return build();
     }
 

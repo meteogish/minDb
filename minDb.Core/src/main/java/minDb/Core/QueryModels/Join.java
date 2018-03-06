@@ -23,8 +23,23 @@ public class Join {
         _table = table;
     }
 
-    public <T> void On(String leftColumn, ValueCompare compare, Table rightTable, String rightColumn) throws ValidationException {
-        _columns.add(new ColumnCondition(_table, leftColumn, compare, rightTable, rightColumn));
+    public Join on(String leftColumn, Table leftTable, ValueCompare compare, String rightColumn, Table rightTable) throws ValidationException {
+        _columns.add(new JoinColumnCondition(leftTable, leftColumn, compare, rightTable, rightColumn));
+        return this;
+    }
+
+    public <T> Join on(String leftColumn, Table leftTable, ValueCompare compare, T value) throws ValidationException {
+        _columns.add(new ValueColumnCondition<T>(leftTable, leftColumn, compare, value));
+        return this;
+    }
+
+    public void on(ColumnCondition condition) throws ValidationException
+    {
+        if(condition == null)
+        {
+            throw new ValidationException("Condition parameter is null");
+        }
+        _columns.add(condition);
     }
 
 	/**
@@ -32,5 +47,10 @@ public class Join {
 	 */
 	public List<ColumnCondition> get_conditions() {
 		return _columns;
-	}
+    }
+    
+    public static Join table(Table t)
+    {
+        return new Join(t);
+    }
 }

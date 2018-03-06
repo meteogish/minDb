@@ -19,20 +19,6 @@ public class QueryParser implements IQueryParser {
         try {
             statement = CCJSqlParserUtil.parse(str);
             return new SelectQueryBuilder().buildQuery((Select)statement);
-            // statement.accept(new StatementVisitorAdapter(){
-            //     @Override
-            //     public void visit(Select select) {
-            //         System.out.println("inside select");
-            //         select.getSelectBody().accept(new SelectVisitorAdapter(){
-            //             @Override    
-            //             public void visit(PlainSelect plainSelect) {
-            //                 System.out.println("inside selectBody");
-            //             }
-            //         });;
-            //     }
-            // });
-            // Update update = (Update)statement;
-            // CreateTable create = (CreateTable)statement;
 		} catch (JSQLParserException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

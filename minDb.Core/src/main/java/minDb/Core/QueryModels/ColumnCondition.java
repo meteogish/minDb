@@ -5,35 +5,31 @@ import minDb.Core.Exceptions.ValidationException;
 /**
  * ColumnConfition
  */
-public class ColumnCondition extends Condition {
-	private Column _leftColumn;
+public abstract class ColumnCondition extends Condition {
+    private Column _leftColumn;
     private ValueCompare _compare;
-	private Column _rightColumn;
 
-	/**
-	 * @return the _compare
-	 */
-	public ValueCompare get_compare() {
-		return _compare;
+    /**
+     * @return the _compare
+     */
+    public ValueCompare get_compare() {
+        return _compare;
     }
-    
-    public ColumnCondition(Table leftTable, String leftColumn, ValueCompare compare, Table rightTable, String rightColumn) throws ValidationException {
-        _leftColumn = new Column(leftColumn);
+
+    /**
+     * @return the _leftColumn
+     */
+    public Column get_leftColumn() {
+        return _leftColumn;
+    }
+
+	public ColumnCondition(Table table, String column, ValueCompare compare) throws ValidationException {
+        if(compare == null)
+        {
+            throw new ValidationException("Compare parameter is null.");
+        }
+
+        _leftColumn = new Column(table, column);
         _compare = compare;
-		_rightColumn = new Column(rightColumn);
-    }
-
-	/**
-	 * @return the _leftColumn
-	 */
-	public Column get_leftColumn() {
-		return _leftColumn;
 	}
-
-	/**
-	 * @return the _rightColumn
-	 */
-	public Column get_rightColumn() {
-		return _rightColumn;
-	}   
 }
