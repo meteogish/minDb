@@ -1,11 +1,13 @@
 package minDb.Core.QueryModels;
 
+import minDb.Core.Exceptions.ValidationException;
+import minDb.Extensions.StringExtenstions;
+
 /**
  * Column
  */
 public class Column {
     private String _name;
-    private Table _table;
 
 	/**
 	 * @return the _name
@@ -14,16 +16,14 @@ public class Column {
 		return _name;
     }
     
-    public Column(Table table, String name) {
-        super();
-        _name = name;
-        _table = table;
-    }
+    public Column(String name) throws ValidationException {
+		super();
+		
+		if(StringExtenstions.IsNullOrEmpty(name))
+		{
+			throw new ValidationException("Column name is null/empty");
+		}
 
-	/**
-	 * @return the _table
-	 */
-	public Table get_table() {
-		return _table;
-	}
+        _name = name;
+    }
 }

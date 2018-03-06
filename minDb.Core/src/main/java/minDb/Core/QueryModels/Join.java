@@ -1,11 +1,16 @@
 package minDb.Core.QueryModels;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import minDb.Core.Exceptions.ValidationException;
+
 /**
  * Join
  */
 public class Join {
     private Table _table;
-    private Condition _condition;
+    private List<ColumnCondition> _columns = new ArrayList<ColumnCondition>();
 
     /**
      * @return the _table
@@ -18,14 +23,14 @@ public class Join {
         _table = table;
     }
 
-    public <T> void On(String leftColumn, ValueCompare compare, Table rightTable, String rightColumn) {
-        _condition = new ColumnCondition(_table, leftColumn, compare, rightTable, rightColumn);
+    public <T> void On(String leftColumn, ValueCompare compare, Table rightTable, String rightColumn) throws ValidationException {
+        _columns.add(new ColumnCondition(_table, leftColumn, compare, rightTable, rightColumn));
     }
 
 	/**
 	 * @return the _condition
 	 */
-	public Condition get_condition() {
-		return _condition;
+	public List<ColumnCondition> get_conditions() {
+		return _columns;
 	}
 }

@@ -9,6 +9,7 @@ import minDb.Core.QueryModels.Condition;
 import minDb.Core.QueryModels.Join;
 import minDb.Core.QueryModels.SelectQuery;
 import minDb.QueryBuilder.FromTableFinder;
+import minDb.QueryBuilder.SelectColumnsFinder;
 import net.sf.jsqlparser.statement.select.PlainSelect;
 import net.sf.jsqlparser.statement.select.Select;
 
@@ -17,6 +18,7 @@ import net.sf.jsqlparser.statement.select.Select;
  */
 public class SelectQueryBuilder {
     private FromTableFinder _fromTableFinder = new FromTableFinder();
+    private SelectColumnsFinder _selectColumnsFinder = new SelectColumnsFinder();
 
     private List<Column> _select = new ArrayList<Column>();
     private List<Join> _join = new ArrayList<Join>();   
@@ -31,6 +33,7 @@ public class SelectQueryBuilder {
 
         // PlainSelect plainSelect = (PlainSelect) selectStatement.getSelectBody();
         _from = _fromTableFinder.FindFromTable(selectStatement);
+        _select = _selectColumnsFinder.getSelectColumns(selectStatement, _from);
         return build();
     }
 

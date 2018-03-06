@@ -1,5 +1,7 @@
 package minDb.Core.QueryModels;
 
+import minDb.Core.Exceptions.ValidationException;
+
 /**
  * ColumnConfition
  */
@@ -15,10 +17,10 @@ public class ColumnCondition extends Condition {
 		return _compare;
     }
     
-    public ColumnCondition(Table leftTable, String leftColumn, ValueCompare compare, Table rightTable, String rightColumn) {
-        _leftColumn = new Column(leftTable, leftColumn);
+    public ColumnCondition(Table leftTable, String leftColumn, ValueCompare compare, Table rightTable, String rightColumn) throws ValidationException {
+        _leftColumn = new Column(leftColumn);
         _compare = compare;
-		_rightColumn = new Column(rightTable, rightColumn);
+		_rightColumn = new Column(rightColumn);
     }
 
 	/**
