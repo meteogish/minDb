@@ -1,0 +1,7 @@
+/**
+ * JsonMetaInforepository
+ */
+public class JsonMetaInfoRepository {
+    
+    
+}

@@ -20,10 +20,8 @@ public class QueryParser implements IQueryParser {
             statement = CCJSqlParserUtil.parse(str);
             return new SelectQueryBuilder().buildQuery((Select)statement);
 		} catch (JSQLParserException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
         } catch (ValidationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
     	System.out.println("hello pro queryparser");

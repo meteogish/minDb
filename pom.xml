@@ -11,5 +11,6 @@
     <module>minDb.Core</module>
     <module>minDb.SqlQueryParser</module>
     <module>ConsoleEntry</module>
+    <module>minDb.MetaInfoRepository</module>
   </modules>
 </project>
