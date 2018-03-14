@@ -10,7 +10,7 @@ import minDb.Core.Exceptions.ValidationException;
  */
 public class Join {
     private Table _table;
-    private List<ColumnCondition> _columns = new ArrayList<ColumnCondition>();
+    private List<JoinColumnCondition> _columns = new ArrayList<JoinColumnCondition>();
 
     /**
      * @return the _table
@@ -28,12 +28,12 @@ public class Join {
         return this;
     }
 
-    public <T> Join on(String leftColumn, Table leftTable, ValueCompare compare, T value) throws ValidationException {
-        _columns.add(new ValueColumnCondition<T>(leftTable, leftColumn, compare, value));
-        return this;
-    }
+    // public <T> Join on(String leftColumn, Table leftTable, ValueCompare compare, T value) throws ValidationException {
+    //     _columns.add(new ValueColumnCondition<T>(leftTable, leftColumn, compare, value));
+    //     return this;
+    // }
 
-    public void on(ColumnCondition condition) throws ValidationException
+    public void on(JoinColumnCondition condition) throws ValidationException
     {
         if(condition == null)
         {
@@ -45,7 +45,7 @@ public class Join {
 	/**
 	 * @return the _condition
 	 */
-	public List<ColumnCondition> get_conditions() {
+	public List<JoinColumnCondition> get_conditions() {
 		return _columns;
     }
     

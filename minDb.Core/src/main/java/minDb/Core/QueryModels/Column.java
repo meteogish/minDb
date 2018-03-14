@@ -27,11 +27,6 @@ public class Column {
     public Column(String name) throws ValidationException {
 		super();
 		
-		if(StringExtenstions.IsNullOrEmpty(name))
-		{
-			throw new ValidationException("Column name is null/empty");
-		}
-
 		_name = name;
 		_table = null;
 	}
@@ -42,11 +37,6 @@ public class Column {
 		if(StringExtenstions.IsNullOrEmpty(name))
 		{
 			throw new ValidationException("Column name is null/empty");
-		}
-
-		if(table == null)
-		{
-			throw new ValidationException("Table is null/empty");
 		}
 
 		_name = name;

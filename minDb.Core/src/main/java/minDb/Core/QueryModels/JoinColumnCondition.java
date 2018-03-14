@@ -11,6 +11,17 @@ public class JoinColumnCondition extends ColumnCondition {
     public JoinColumnCondition(Table leftTable, String leftColumn, ValueCompare compare, Table rightTable, String rightColumn) throws ValidationException {
 		super(leftTable, leftColumn, compare);
 		_rightColumn = new Column(rightTable, rightColumn);
+	}
+	
+	public JoinColumnCondition(Column leftColumn, Column rightColumn, ValueCompare compare) throws ValidationException {
+		super(leftColumn, compare);
+
+		if(rightColumn == null)
+        {
+            throw new ValidationException("RightColumn parameter is null.");
+		}
+		
+		_rightColumn = rightColumn;
     }
 
 	/**

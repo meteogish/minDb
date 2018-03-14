@@ -31,5 +31,15 @@ public abstract class ColumnCondition extends Condition {
 
         _leftColumn = new Column(table, column);
         _compare = compare;
+    }
+    
+    public ColumnCondition(Column leftColumn, ValueCompare compare) throws ValidationException {
+        if(leftColumn == null)
+        {
+            throw new ValidationException("Column parameter is null.");
+        }
+
+        _leftColumn = leftColumn;
+        _compare = compare;
 	}
 }
