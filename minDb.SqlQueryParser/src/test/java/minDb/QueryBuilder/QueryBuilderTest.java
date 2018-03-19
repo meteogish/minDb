@@ -11,13 +11,13 @@ import org.junit.Test;
 import minDb.Core.Exceptions.ValidationException;
 import minDb.Core.MetaInfo.ColumnMetaInfo;
 import minDb.Core.MetaInfo.ColumnType;
+import minDb.Core.MetaInfo.TableMetaInfo;
 import minDb.Core.QueryModels.Aggregation;
 import minDb.Core.QueryModels.Join;
 import minDb.Core.QueryModels.SelectColumn;
 import minDb.Core.QueryModels.SelectQuery;
 import minDb.Core.QueryModels.Table;
 import minDb.Core.QueryModels.ValueCompare;
-import minDb.Core.QueryModels.Create.CreateQuery;
 import minDb.SqlQueryParser.CreateQueryBuilder;
 import minDb.SqlQueryParser.SelectQueryBuilder;
 import net.sf.jsqlparser.JSQLParserException;
@@ -42,7 +42,7 @@ public class QueryBuilderTest {
 		return null;
     }
 
-    private CreateQuery buildCreate(String strQuery) throws ValidationException {
+    private TableMetaInfo buildCreate(String strQuery) throws ValidationException {
         Statement statement;
         try {
             statement = CCJSqlParserUtil.parse(strQuery);
@@ -140,11 +140,11 @@ public class QueryBuilderTest {
         expectedColumns.add(new ColumnMetaInfo(new ColumnType(ColumnType.Type.integer, -1), "Id"));
         expectedColumns.add(new ColumnMetaInfo(new ColumnType(ColumnType.Type.varchar, 10),"Name"));       
 
-        CreateQuery q = buildCreate(createQuery);
+        TableMetaInfo info = buildCreate(createQuery);
 
-        assertNotNull(q);
+        assertNotNull(info);
 
-        List<ColumnMetaInfo> actualColumns = q.get_columns();
+        List<ColumnMetaInfo> actualColumns = info.get_columnsInfo();
         assertNotNull(actualColumns);
         assertEquals(expectedColumns.size(), actualColumns.size());
 
