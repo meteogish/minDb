@@ -1,4 +1,4 @@
-package minDb.SqlQueryParser;
+package minDb.QueryBuilder;
 
 import java.util.List;
 

@@ -14,8 +14,18 @@
   <dependencies>
     <dependency>
       <groupId>minDb</groupId>
-      <artifactId>minDb.SqlQueryParser</artifactId>
+      <artifactId>minDb.Core</artifactId>
       <version>1.0</version>
+    </dependency>
+    <dependency>
+      <groupId>minDb</groupId>
+      <artifactId>minDb.Factory</artifactId>
+      <version>1.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.inject</groupId>
+      <artifactId>guice</artifactId>
+      <version>4.0</version>
     </dependency>
   </dependencies>
 </project>

@@ -18,7 +18,6 @@ import minDb.Core.QueryModels.SelectColumn;
 import minDb.Core.QueryModels.SelectQuery;
 import minDb.Core.QueryModels.Table;
 import minDb.Core.QueryModels.ValueCompare;
-import minDb.SqlQueryParser.CreateQueryBuilder;
 import minDb.SqlQueryParser.SelectQueryBuilder;
 import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;

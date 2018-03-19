@@ -9,16 +9,14 @@ public class ColumnType {
     
     private int _length;
 
-    public ColumnType(Type type, int length)
+    public ColumnType(Type type, Integer length)
     {
         _type = type;
+        if(length == null)
+        {
+            _length = -1;
+        }
         _length = length;
-    }
-
-    public ColumnType(Type type)
-    {
-        _type = type;
-        _length = -1;
     }
 
 	/**

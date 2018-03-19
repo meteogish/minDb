@@ -7,5 +7,6 @@ import minDb.Core.MetaInfo.DatabaseMetaInfo;
  * IMetaInfoProvider
  */
 public interface IMetaInfoRepository {
-    DatabaseMetaInfo getDatabaseMetaInfo(String path) throws ValidationException;   
+    DatabaseMetaInfo getDatabaseMetaInfo(String path) throws ValidationException;
+       
 }   
