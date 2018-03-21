@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import minDb.Core.Exceptions.ValidationException;
@@ -14,42 +15,31 @@ import minDb.Core.MetaInfo.ColumnType;
 import minDb.Core.MetaInfo.TableMetaInfo;
 import minDb.Core.QueryModels.Aggregation;
 import minDb.Core.QueryModels.Join;
+import minDb.Core.QueryModels.Query;
 import minDb.Core.QueryModels.SelectColumn;
-import minDb.Core.QueryModels.SelectQuery;
 import minDb.Core.QueryModels.Table;
 import minDb.Core.QueryModels.ValueCompare;
-import minDb.SqlQueryParser.SelectQueryBuilder;
-import net.sf.jsqlparser.JSQLParserException;
-import net.sf.jsqlparser.parser.CCJSqlParserUtil;
-import net.sf.jsqlparser.statement.Statement;
-import net.sf.jsqlparser.statement.create.table.CreateTable;
-import net.sf.jsqlparser.statement.select.Select;
+import minDb.QueryBuilder.CreateTable.CreateQueryFinder;
+import minDb.QueryBuilder.Select.FromTableFinder;
+import minDb.QueryBuilder.Select.JoinsFinder;
+import minDb.QueryBuilder.Select.SelectColumnsFinder;
+import minDb.SqlQueryParser.QueryParser;
 
 /**
  * QueryBuilderTests
  */
 public class QueryBuilderTest {
 
-    private SelectQuery buildSelect(String strQuery) throws ValidationException {
-        Statement statement;
-        try {
-            statement = CCJSqlParserUtil.parse(strQuery);
-                return new SelectQueryBuilder().buildQuery((Select) statement);
-        } catch (JSQLParserException e) {
-            e.printStackTrace();
-        }
-		return null;
-    }
+    QueryParser parser;
 
-    private TableMetaInfo buildCreate(String strQuery) throws ValidationException {
-        Statement statement;
-        try {
-            statement = CCJSqlParserUtil.parse(strQuery);
-            return new CreateQueryBuilder().buildQuery((CreateTable) statement);
-        } catch (JSQLParserException e) {
-            e.printStackTrace();
-        }
-		return null;
+    @Before
+    public void ctor()
+    {
+        parser = new QueryParser(
+            new CreateQueryFinder(), 
+            new FromTableFinder(),
+            new SelectColumnsFinder(),
+            new JoinsFinder());
     }
 
     @Test
@@ -61,10 +51,10 @@ public class QueryBuilderTest {
         expectedSelectColumns.add(new SelectColumn("Another", null, null));
         expectedSelectColumns.add(new SelectColumn("ROI", "roi", Aggregation.Count));
         
-        SelectQuery actualQuery = buildSelect(strQuery);
+        Query actualQuery = parser.parse(strQuery);
 
-        assertEquals("Customers", actualQuery.get_from().get_name());
-        assertEquals("c", actualQuery.get_from().get_alias());
+        assertEquals("Customers", actualQuery.get_fromTable().get_name());
+        assertEquals("c", actualQuery.get_fromTable().get_alias());
 
         List<SelectColumn> actualSelectColumns = actualQuery.get_select();
         assertEquals(3, actualSelectColumns.size());
@@ -75,12 +65,6 @@ public class QueryBuilderTest {
             assertEquals(expectedSelectColumns.get(i).get_alias(), actualSelectColumns.get(i).get_alias());
             assertEquals(expectedSelectColumns.get(i).get_aggregate(), actualSelectColumns.get(i).get_aggregate());
         }
-    }
-
-    @Test(expected = ValidationException.class)
-    public void SelectStatement_NegativeTest_DuplicatedAliases() throws ValidationException {
-        String strQuery = "select Id as i, Another as i from Customers c";
-        buildSelect(strQuery);
     }
 
     @Test
@@ -100,15 +84,15 @@ public class QueryBuilderTest {
         expectedJoins.add(Join.table(t).on("TerritoryID", t, ValueCompare.Equals, "TerritoryID", et));
 
         
-        SelectQuery actualQuery = buildSelect(strQuery);
+        Query actualQuery = parser.parse(strQuery);
 
-        assertEquals("Employees", actualQuery.get_from().get_name());
-        assertEquals("e", actualQuery.get_from().get_alias());
+        assertEquals("Employees", actualQuery.get_fromTable().get_name());
+        assertEquals("e", actualQuery.get_fromTable().get_alias());
 
         List<SelectColumn> actualSelectColumns = actualQuery.get_select();
         assertEquals(0, actualQuery.get_select().size());
 
-        List<Join> actualJoins = actualQuery.get_join();
+        List<Join> actualJoins = actualQuery.get_joins();
         assertEquals(expectedJoins.size(), actualJoins.size());
 
 
@@ -139,7 +123,8 @@ public class QueryBuilderTest {
         expectedColumns.add(new ColumnMetaInfo(new ColumnType(ColumnType.Type.integer, -1), "Id"));
         expectedColumns.add(new ColumnMetaInfo(new ColumnType(ColumnType.Type.varchar, 10),"Name"));       
 
-        TableMetaInfo info = buildCreate(createQuery);
+        Query actualQuery =  parser.parse(createQuery);
+        TableMetaInfo info = actualQuery.get_createTableInfo();
 
         assertNotNull(info);
 
@@ -154,8 +139,4 @@ public class QueryBuilderTest {
             assertEquals(expectedColumns.get(i).get_columnType().get_length(), actualColumns.get(i).get_columnType().get_length());            
         }
     }
-
-
-
-
 }

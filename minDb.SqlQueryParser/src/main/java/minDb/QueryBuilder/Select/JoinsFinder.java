@@ -1,22 +1,18 @@
-package minDb.QueryBuilder;
+package minDb.QueryBuilder.Select;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.text.DefaultStyledDocument.ElementSpec;
-
 import minDb.Core.Exceptions.ValidationException;
-import minDb.Core.QueryModels.ColumnCondition;
 import minDb.Core.QueryModels.Join;
 import minDb.Core.QueryModels.JoinColumnCondition;
 import minDb.Core.QueryModels.Table;
 import minDb.Core.QueryModels.ValueCompare;
-import net.sf.jsqlparser.expression.Alias;
+import minDb.QueryBuilder.BaseFinder;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.operators.conditional.AndExpression;
 import net.sf.jsqlparser.expression.operators.relational.EqualsTo;
 import net.sf.jsqlparser.schema.Column;
-import net.sf.jsqlparser.statement.select.FromItem;
 
 /**
  * JoinsFinder

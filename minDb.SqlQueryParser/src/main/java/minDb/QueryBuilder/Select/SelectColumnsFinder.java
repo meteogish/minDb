@@ -1,4 +1,4 @@
-package minDb.QueryBuilder;
+package minDb.QueryBuilder.Select;
 
 import java.util.ArrayList;
 import java.util.List;

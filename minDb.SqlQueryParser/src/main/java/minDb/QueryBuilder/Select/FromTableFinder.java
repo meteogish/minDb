@@ -1,6 +1,7 @@
-package minDb.QueryBuilder;
+package minDb.QueryBuilder.Select;
 
 import minDb.Core.Exceptions.ValidationException;
+import minDb.QueryBuilder.BaseFinder;
 import net.sf.jsqlparser.statement.select.PlainSelect;
 
 /**

@@ -1,4 +1,4 @@
-package minDb.QueryBuilder;
+package minDb.QueryBuilder.CreateTable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,6 +8,7 @@ import minDb.Core.MetaInfo.ColumnMetaInfo;
 import minDb.Core.MetaInfo.ColumnType;
 import minDb.Core.MetaInfo.ColumnType.Type;
 import minDb.Extensions.EnumExtensions;
+import minDb.QueryBuilder.BaseFinder;
 import net.sf.jsqlparser.statement.create.table.ColumnDefinition;
 import net.sf.jsqlparser.statement.create.table.CreateTable;
 
