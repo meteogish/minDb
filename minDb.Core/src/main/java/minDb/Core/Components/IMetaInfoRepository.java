@@ -8,5 +8,5 @@ import minDb.Core.MetaInfo.DatabaseMetaInfo;
  */
 public interface IMetaInfoRepository {
     DatabaseMetaInfo getDatabaseMetaInfo(String path) throws ValidationException;
-       
+    void saveDatabaseMetaInfo(DatabaseMetaInfo info, String folderPath, String name) throws ValidationException;
 }   

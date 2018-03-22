@@ -1,0 +1,1 @@
+{"_tables":[{"_columnsInfo":[{"_type":{"_type":"integer","_length":-1},"_name":"Id"},{"_type":{"_type":"varchar","_length":10},"_name":"Name"},{"_type":{"_type":"varchar","_length":20},"_name":"Surname"}],"_tableName":"Accounts"}]}
