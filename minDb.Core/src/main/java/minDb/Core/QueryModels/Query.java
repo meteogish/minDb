@@ -101,4 +101,11 @@ public class Query {
 	public Condition get_where() {
 		return _where;
 	}
+
+	/**
+	 * @return the _type
+	 */
+	public QueryType get_type() {
+		return _type;
+	}
 }
