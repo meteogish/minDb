@@ -1,4 +1,4 @@
-package minDb.QueryBuilder.Select;
+package minDb.SqlQueryParser.Adapter.Select;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +8,7 @@ import minDb.Core.QueryModels.Join;
 import minDb.Core.QueryModels.JoinColumnCondition;
 import minDb.Core.QueryModels.Table;
 import minDb.Core.QueryModels.ValueCompare;
-import minDb.QueryBuilder.BaseFinder;
+import minDb.SqlQueryParser.Adapter.From.IFromTableAdapter;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.operators.conditional.AndExpression;
 import net.sf.jsqlparser.expression.operators.relational.EqualsTo;
@@ -17,15 +17,19 @@ import net.sf.jsqlparser.schema.Column;
 /**
  * JoinsFinder
  */
-public class JoinsFinder extends BaseFinder {
-    List<Join> _joins = new ArrayList<Join>();
+public class JoinsFinder implements IJoinAdapter {
+    private IFromTableAdapter _fromTableFinder;
 
-    public List<Join> getCoreJoinsFromParsed(List<net.sf.jsqlparser.statement.select.Join> parsedJoins, Table fromTable)
+    public JoinsFinder(IFromTableAdapter fromTableAdapter) {
+        _fromTableFinder = fromTableAdapter;
+    }
+
+    public List<Join> getJoins(List<net.sf.jsqlparser.statement.select.Join> parsedJoins, Table fromTable)
             throws ValidationException {
+        List<Join> _joins = new ArrayList<Join>();
         if (parsedJoins != null && !parsedJoins.isEmpty()) {
             for (net.sf.jsqlparser.statement.select.Join parsedJoin : parsedJoins) {
-                Table joinTable = getTableFromItem(parsedJoin.getRightItem());
-                Expression expr = parsedJoin.getOnExpression();
+                Table joinTable = _fromTableFinder.getTableFromItem(parsedJoin.getRightItem());
                 Join join = new Join(joinTable);
                 join.on(parseJoinExpression(parsedJoin.getOnExpression(), join, fromTable));
                 _joins.add(join);
@@ -84,5 +88,4 @@ public class JoinsFinder extends BaseFinder {
             throw new ValidationException("There is no table alias in on part of join.");
         }
     }
-
 }

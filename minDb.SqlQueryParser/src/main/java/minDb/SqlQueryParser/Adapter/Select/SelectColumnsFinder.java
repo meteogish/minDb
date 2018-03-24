@@ -1,4 +1,4 @@
-package minDb.QueryBuilder.Select;
+package minDb.SqlQueryParser.Adapter.Select;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,32 +12,26 @@ import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.Function;
 import net.sf.jsqlparser.schema.Column;
 import net.sf.jsqlparser.statement.select.AllColumns;
-import net.sf.jsqlparser.statement.select.AllTableColumns;
 import net.sf.jsqlparser.statement.select.PlainSelect;
 import net.sf.jsqlparser.statement.select.SelectExpressionItem;
 import net.sf.jsqlparser.statement.select.SelectItem;
-import net.sf.jsqlparser.statement.select.SetOperationList;
-import net.sf.jsqlparser.statement.select.WithItem;
 
 /**
  * SelectColumnsFinder
  */
-public class SelectColumnsFinder {
-
-    private List<SelectColumn> _select = new ArrayList<SelectColumn>();;
-
-    public List<SelectColumn> getSelectColumns(PlainSelect plainSelect)
-            throws ValidationException {
+public class SelectColumnsFinder implements ISelectAdapter {
+    public List<SelectColumn> getSelectColumns(PlainSelect plainSelect) throws ValidationException {
+        List<SelectColumn> select = new ArrayList<SelectColumn>();
         for (SelectItem item : plainSelect.getSelectItems()) {
             if (AllColumns.class.isInstance(item)) {
                 break;
             }
-            add(getColumn((SelectExpressionItem) item));
+            add(getColumn((SelectExpressionItem) item), select);
         }
-        return _select;
+        return select;
     }
 
-    public SelectColumn getColumn(SelectExpressionItem selectExpressionItem) throws ValidationException {
+    private SelectColumn getColumn(SelectExpressionItem selectExpressionItem) throws ValidationException {
         Alias aliasExpression = selectExpressionItem.getAlias();
         String alias = aliasExpression != null ? aliasExpression.getName() : null;
         
@@ -60,17 +54,17 @@ public class SelectColumnsFinder {
         }
     }
 
-    public String getAgregationColumnName(Function function) throws ValidationException {
+    private String getAgregationColumnName(Function function) throws ValidationException {
         Expression columnExpression = function.getParameters().getExpressions().stream().findFirst().orElse(null);
         if (Column.class.isInstance(columnExpression)) {
             return ((Column) columnExpression).getColumnName();
         } else {
-            throw new ValidationException("Agregation is not column columnExpressionression");
+            throw new ValidationException("Agregation is not column columnExpression");
         }
     }
 
-    private void add(SelectColumn newColumn) throws ValidationException {
-        for (SelectColumn column : _select) {
+    private void add(SelectColumn newColumn, List<SelectColumn> select) throws ValidationException {
+        for (SelectColumn column : select) {
             if (column.get_name().equalsIgnoreCase(newColumn.get_name())) {
                 throw new ValidationException("Duplicated column names in select statement.");
             }
@@ -79,21 +73,6 @@ public class SelectColumnsFinder {
                 throw new ValidationException("Duplicated column aliases in select statement.");
             }
         }
-        _select.add(newColumn);
+        select.add(newColumn);
     }
-
-    //Region Not implemented
-    public void visit(AllColumns allColumns) {
-    }
-
-    public void visit(AllTableColumns allTableColumns) {
-    }
-
-    public void visit(SetOperationList setOpList) {
-    }
-
-    public void visit(WithItem withItem) {
-    }
-
-    //Region Not impemented
 }

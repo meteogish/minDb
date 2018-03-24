@@ -1,6 +1,5 @@
 package minDb.Core.QueryModels;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import minDb.Core.Exceptions.ValidationException;
@@ -21,11 +20,13 @@ public class Query {
     private QueryType _type;
 
     private List<SelectColumn> _select;
-    private Table _fromTable;
+    private Table _table;
     private List<Join> _joins; 
     private Condition _where;
     
     private TableMetaInfo _createTableInfo;
+
+    private List<String> _insertValues;
 
     public static Query buildCreateTableQuery(TableMetaInfo tableMetaInfo)
     {
@@ -61,9 +62,28 @@ public class Query {
         Query q = new Query();
         q._type = QueryType.Select;
         q._select = select;
-        q._fromTable = from;
+        q._table = from;
         q._joins = joins;
         q._where = where;
+        return q;
+    }
+
+    public static Query buildInsertQuery(Table table, List<String> values) throws ValidationException
+    {
+        if(table == null)
+        {
+            throw new ValidationException("Table is null during buildInsertQuery");
+        }
+
+        if(values == null)
+        {
+            throw new ValidationException("Values is null during buildInsertQuery");            
+        }
+
+        Query q = new Query();
+        q._type = QueryType.Insert;
+        q._table = table;
+        q._insertValues = values;
         return q;
     }
 
@@ -82,10 +102,10 @@ public class Query {
 	}
 
 	/**
-	 * @return the _fromTable
+	 * @return the _table
 	 */
-	public Table get_fromTable() {
-		return _fromTable;
+	public Table get_table() {
+		return _table;
 	}
 
 	/**
@@ -107,5 +127,12 @@ public class Query {
 	 */
 	public QueryType get_type() {
 		return _type;
+	}
+
+	/**
+	 * @return the _insertValues
+	 */
+	public List<String> get_insertValues() {
+		return _insertValues;
 	}
 }

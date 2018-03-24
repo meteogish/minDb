@@ -1,4 +1,4 @@
-package minDb.QueryBuilder.CreateTable;
+package minDb.SqlQueryParser.Adapter.Create;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,14 +8,13 @@ import minDb.Core.MetaInfo.ColumnMetaInfo;
 import minDb.Core.MetaInfo.ColumnType;
 import minDb.Core.MetaInfo.ColumnType.Type;
 import minDb.Extensions.EnumExtensions;
-import minDb.QueryBuilder.BaseFinder;
 import net.sf.jsqlparser.statement.create.table.ColumnDefinition;
 import net.sf.jsqlparser.statement.create.table.CreateTable;
 
 /**
  * CreateQueryFinder
  */
-public class CreateQueryFinder extends BaseFinder {
+public class CreateQueryFinder implements ICreateQueryAdapter {
 
     public List<ColumnMetaInfo> getCreateTableColumns(CreateTable createQuery) throws ValidationException
     {
@@ -56,5 +55,4 @@ public class CreateQueryFinder extends BaseFinder {
 
         return createColumns;
     }
-
 }

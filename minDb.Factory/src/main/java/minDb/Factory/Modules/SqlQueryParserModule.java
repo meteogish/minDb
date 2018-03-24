@@ -1,15 +1,19 @@
 package minDb.Factory.Modules;
 
-import java.lang.reflect.Constructor;
-
 import com.google.inject.AbstractModule;
 
 import minDb.Core.Components.IQueryParser;
-import minDb.QueryBuilder.CreateTable.CreateQueryFinder;
-import minDb.QueryBuilder.Select.FromTableFinder;
-import minDb.QueryBuilder.Select.JoinsFinder;
-import minDb.QueryBuilder.Select.SelectColumnsFinder;
 import minDb.SqlQueryParser.QueryParser;
+import minDb.SqlQueryParser.Adapter.Create.CreateQueryFinder;
+import minDb.SqlQueryParser.Adapter.Create.ICreateQueryAdapter;
+import minDb.SqlQueryParser.Adapter.From.FromTableFinder;
+import minDb.SqlQueryParser.Adapter.From.IFromTableAdapter;
+import minDb.SqlQueryParser.Adapter.Insert.IInsertQueryAdapter;
+import minDb.SqlQueryParser.Adapter.Insert.InsertQueryFinder;
+import minDb.SqlQueryParser.Adapter.Select.IJoinAdapter;
+import minDb.SqlQueryParser.Adapter.Select.ISelectAdapter;
+import minDb.SqlQueryParser.Adapter.Select.JoinsFinder;
+import minDb.SqlQueryParser.Adapter.Select.SelectColumnsFinder;
 
 /**
  * SqlQueryParserModule
@@ -18,24 +22,13 @@ public class SqlQueryParserModule extends AbstractModule {
 
 	@Override
 	protected void configure() {
-		bind(CreateQueryFinder.class);
-		bind(FromTableFinder.class);
-		bind(SelectColumnsFinder.class);
-		bind(JoinsFinder.class);
-		Constructor<QueryParser> constructor = null;
-		try {
-			constructor = QueryParser.class.getConstructor(
-			CreateQueryFinder.class,
-			FromTableFinder.class,
-			SelectColumnsFinder.class,
-			JoinsFinder.class);
-		} catch (NoSuchMethodException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		bind(IQueryParser.class).toConstructor(constructor);
+		bind(ICreateQueryAdapter.class).to(minDb.SqlQueryParser.Adapter.Create.CreateQueryFinder.class);
+		bind(ICreateQueryAdapter.class).to(CreateQueryFinder.class);
+		bind(IFromTableAdapter.class).to(FromTableFinder.class);
+		bind(IInsertQueryAdapter.class).to(InsertQueryFinder.class);
+		bind(ISelectAdapter.class).to(SelectColumnsFinder.class);
+		bind(IJoinAdapter.class).to(JoinsFinder.class);
+
+		bind(IQueryParser.class).to(QueryParser.class);
 	}
 }

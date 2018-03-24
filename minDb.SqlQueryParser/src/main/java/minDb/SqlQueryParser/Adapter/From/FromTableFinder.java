@@ -1,4 +1,4 @@
-package minDb.QueryBuilder;
+package minDb.SqlQueryParser.Adapter.From;
 
 import minDb.Core.Exceptions.ValidationException;
 import net.sf.jsqlparser.schema.Table;
@@ -7,8 +7,8 @@ import net.sf.jsqlparser.statement.select.FromItem;
 /**
  * BaseFinder
  */
-public abstract class BaseFinder {
-    protected minDb.Core.QueryModels.Table getTableFromItem(FromItem fromItem) throws ValidationException {
+public class FromTableFinder implements IFromTableAdapter {
+    public minDb.Core.QueryModels.Table getTableFromItem(FromItem fromItem) throws ValidationException {
         if(fromItem == null)
         {
             throw new ValidationException("FromItem is null.");            
