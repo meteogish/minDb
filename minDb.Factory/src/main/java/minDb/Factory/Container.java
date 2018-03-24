@@ -13,6 +13,5 @@ public class Container {
     public Injector getInjector()
     {
        return Guice.createInjector(new MetaInfoRepositoryModule(), new SqlQueryParserModule());
-    }
-    
+    }    
 }

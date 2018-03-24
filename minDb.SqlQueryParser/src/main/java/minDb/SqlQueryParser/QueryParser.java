@@ -31,7 +31,7 @@ import net.sf.jsqlparser.statement.select.SelectBody;
 public class QueryParser implements IQueryParser {
     private ICreateQueryAdapter _createColumnsFinder;
     private IFromTableAdapter _fromtableFinder;
-    private IInsertQueryAdapter _insertValuesFinder;
+    private IInsertQueryAdapter _insertAdapter;
     private ISelectAdapter _selectColumnsFinder;
     private IJoinAdapter _joinsFinder;
 
@@ -43,7 +43,7 @@ public class QueryParser implements IQueryParser {
         IJoinAdapter joinsFinder) {
         _createColumnsFinder = createFinder;
         _fromtableFinder = fromtableFinder;
-        _insertValuesFinder = insertValuesFinder;
+        _insertAdapter = insertValuesFinder;
         _selectColumnsFinder = selectColumnsFinder;
         _joinsFinder = joinsFinder;
     }
@@ -75,12 +75,10 @@ public class QueryParser implements IQueryParser {
     }
 
     private Query buildInsertQuery(Insert statement) throws ValidationException {
-        Table insertTable = _fromtableFinder.getTableFromSqlTable(statement.getTable());
-
-        List<Object> insertValues = _insertValuesFinder.getInsertValues(statement);
-        List<String> collect = insertValues.stream().map(o -> o.toString()).collect(Collectors.toList());
-
-        return Query.buildInsertQuery(insertTable, collect);
+        return Query.buildInsertQuery(
+            _fromtableFinder.getTableFromSqlTable(statement.getTable()),
+            _insertAdapter.getInsertColumns(statement),
+            _insertAdapter.getInsertValues(statement));
     }
 
     private Query buildCreateTableQuery(CreateTable query) throws ValidationException {

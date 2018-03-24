@@ -26,7 +26,8 @@ public class Query {
     
     private TableMetaInfo _createTableInfo;
 
-    private List<String> _insertValues;
+    private List<String> _insertColumns;
+    private List<Object> _insertValues;
 
     public static Query buildCreateTableQuery(TableMetaInfo tableMetaInfo)
     {
@@ -68,22 +69,29 @@ public class Query {
         return q;
     }
 
-    public static Query buildInsertQuery(Table table, List<String> values) throws ValidationException
+    public static Query buildInsertQuery(Table table, List<String> columns, List<Object> values) throws ValidationException
     {
         if(table == null)
         {
-            throw new ValidationException("Table is null during buildInsertQuery");
+            throw new ValidationException("Table is null");
         }
 
         if(values == null)
         {
-            throw new ValidationException("Values is null during buildInsertQuery");            
+            throw new ValidationException("Values is null");            
         }
+
+        if(columns == null)
+        {
+            throw new ValidationException("Columns is null");            
+        }
+
 
         Query q = new Query();
         q._type = QueryType.Insert;
         q._table = table;
         q._insertValues = values;
+        q._insertColumns = columns;
         return q;
     }
 
@@ -132,7 +140,14 @@ public class Query {
 	/**
 	 * @return the _insertValues
 	 */
-	public List<String> get_insertValues() {
+	public List<Object> get_insertValues() {
 		return _insertValues;
+	}
+
+	/**
+	 * @return the _insertColumns
+	 */
+	public List<String> get_insertColumns() {
+		return _insertColumns;
 	}
 }

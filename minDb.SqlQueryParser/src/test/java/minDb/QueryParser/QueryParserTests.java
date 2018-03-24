@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Before;
@@ -143,11 +144,43 @@ public class QueryParserTests {
 
     @Test
     public void InsertQuery_Test() throws ValidationException {
-        String insertQuery = "insert into Accounts(Id, Name, Surname) values (23, 'TestName', 'TestSurname')";
+        String insertQuery = "insert into Accounts(Id, Salary, Name, Surname) values (23, 23.045, 'TestName', 'TestSurname')";
 
-        //Table expectedTable = new Table("Accounts");
+        List<String> expectedColumns = Arrays.asList("Id", "Salary", "Name", "Surname");
+        List<Object> expectedValues = Arrays.asList((long)23, 23.045, "TestName", "TestSurname");
 
         Query q = parser.parse(insertQuery);
         assertEquals(Query.QueryType.Insert, q.get_type());
+
+        List<Object> actualValues = q.get_insertValues();
+        List<String> actualColumns = q.get_insertColumns();
+
+		assertEquals(expectedValues.size(), actualValues.size());
+		assertEquals(expectedColumns.size(), actualColumns.size());        
+        
+        for (int i = 0; i < expectedValues.size(); ++i) {
+            assertEquals(expectedValues.get(i), actualValues.get(i));
+            assertEquals(expectedColumns.get(i), actualColumns.get(i));
+        }
+    }
+
+    @Test
+    public void InsertAll_Query_Test() throws ValidationException {
+        String insertQuery = "insert into Accounts values (23, 23.045, 'TestName', 'TestSurname')";
+
+        List<Object> expectedValues = Arrays.asList((long)23, 23.045, "TestName", "TestSurname");
+
+        Query q = parser.parse(insertQuery);
+        assertEquals(Query.QueryType.Insert, q.get_type());
+
+        List<Object> actualValues = q.get_insertValues();
+        List<String> actualColumns = q.get_insertColumns();
+
+		assertEquals(expectedValues.size(), actualValues.size());
+		assertEquals(0, actualColumns.size());        
+        
+        for (int i = 0; i < expectedValues.size(); ++i) {
+            assertEquals(expectedValues.get(i), actualValues.get(i));
+        }
     }
 }
