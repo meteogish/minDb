@@ -5,17 +5,12 @@ public class ColumnType {
         integer, decimal, varchar
     }
 
-    private Type _type;
-    
-    private int _length;
+    private Type _type;    
+    private Integer _length;
 
     public ColumnType(Type type, Integer length)
     {
         _type = type;
-        if(length == null)
-        {
-            _length = -1;
-        }
         _length = length;
     }
 
@@ -29,7 +24,7 @@ public class ColumnType {
 	/**
 	 * @return the _length
 	 */
-	public int get_length() {
+	public Integer get_length() {
 		return _length;
     }
 }

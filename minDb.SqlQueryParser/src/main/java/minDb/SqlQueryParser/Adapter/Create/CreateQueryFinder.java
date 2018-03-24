@@ -33,7 +33,7 @@ public class CreateQueryFinder implements ICreateQueryAdapter {
                 throw new ValidationException("Unsupported column type.");
             }
 
-            int length = -1;
+            Integer length = null;
             if(type == Type.varchar)
             {
                 List<String> arguments = columnDefinition.getColDataType().getArgumentsStringList();

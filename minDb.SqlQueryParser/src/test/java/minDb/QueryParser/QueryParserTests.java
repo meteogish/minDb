@@ -120,7 +120,7 @@ public class QueryParserTests {
         String expectedTableName = "Customers";
 
         List<ColumnMetaInfo> expectedColumns = new ArrayList<ColumnMetaInfo>(2);
-        expectedColumns.add(new ColumnMetaInfo(new ColumnType(ColumnType.Type.integer, -1), "Id"));
+        expectedColumns.add(new ColumnMetaInfo(new ColumnType(ColumnType.Type.integer, null), "Id"));
         expectedColumns.add(new ColumnMetaInfo(new ColumnType(ColumnType.Type.varchar, 10), "Name"));
 
         Query actualQuery = parser.parse(createQuery);
