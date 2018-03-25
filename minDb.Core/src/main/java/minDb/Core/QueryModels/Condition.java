@@ -3,7 +3,5 @@ package minDb.Core.QueryModels;
 /**
  * Condition
  */
-public class Condition {
-
-    
+public class Condition {    
 }

@@ -3,6 +3,7 @@ package minDb.Factory;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 
+import minDb.Factory.Modules.DataProviderModule;
 import minDb.Factory.Modules.MetaInfoRepositoryModule;
 import minDb.Factory.Modules.SqlQueryParser.SqlQueryParserModule;
 
@@ -12,6 +13,6 @@ import minDb.Factory.Modules.SqlQueryParser.SqlQueryParserModule;
 public class Container {
     public Injector getInjector()
     {
-       return Guice.createInjector(new MetaInfoRepositoryModule(), new SqlQueryParserModule());
+       return Guice.createInjector(new MetaInfoRepositoryModule(), new SqlQueryParserModule(), new DataProviderModule());
     }    
 }

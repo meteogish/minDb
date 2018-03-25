@@ -12,7 +12,7 @@
         {
             "label": "verify",
             "type": "shell",
-            "command": "mvn -B verify",
+            "command": "mvn verify",
             "group": "build"
         },
         {

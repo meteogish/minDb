@@ -34,7 +34,7 @@ public class CreateQueryFinder implements ICreateQueryAdapter {
             }
 
             Integer length = null;
-            if(type == Type.varchar)
+            if(type == Type.VARCHAR)
             {
                 List<String> arguments = columnDefinition.getColDataType().getArgumentsStringList();
                 if(arguments.isEmpty())

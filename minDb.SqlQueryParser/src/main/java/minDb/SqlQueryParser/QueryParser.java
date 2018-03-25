@@ -67,9 +67,9 @@ public class QueryParser implements IQueryParser {
                 throw new ValidationException("Unsupported statement");
             }
         } catch (JSQLParserException e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         } catch (ValidationException e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
         return null;
     }
