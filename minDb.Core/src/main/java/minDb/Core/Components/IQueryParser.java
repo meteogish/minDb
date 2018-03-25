@@ -1,6 +1,6 @@
 package minDb.Core.Components;
 
-import minDb.Core.QueryModels.Query;
+import minDb.Core.QueryModels.Queries.Query;
 
 /**
  * IQueryParser

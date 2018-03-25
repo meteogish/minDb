@@ -16,10 +16,12 @@ import minDb.Core.MetaInfo.ColumnType;
 import minDb.Core.MetaInfo.TableMetaInfo;
 import minDb.Core.QueryModels.Aggregation;
 import minDb.Core.QueryModels.Join;
-import minDb.Core.QueryModels.Query;
 import minDb.Core.QueryModels.SelectColumn;
 import minDb.Core.QueryModels.Table;
 import minDb.Core.QueryModels.ValueCompare;
+import minDb.Core.QueryModels.Queries.InsertQuery;
+import minDb.Core.QueryModels.Queries.Query;
+import minDb.Core.QueryModels.Queries.SelectQuery;
 import minDb.SqlQueryParser.QueryParser;
 import minDb.SqlQueryParser.Adapter.Create.CreateQueryFinder;
 import minDb.SqlQueryParser.Adapter.From.FromTableFinder;
@@ -55,7 +57,7 @@ public class QueryParserTests {
         expectedSelectColumns.add(new SelectColumn("Another", null, null));
         expectedSelectColumns.add(new SelectColumn("ROI", "roi", Aggregation.Count));
 
-        Query actualQuery = parser.parse(strQuery);
+        SelectQuery actualQuery = parser.parse(strQuery).get_select();
 
         assertEquals("Customers", actualQuery.get_table().get_name());
         assertEquals("c", actualQuery.get_table().get_alias());
@@ -83,7 +85,7 @@ public class QueryParserTests {
         expectedJoins.add(Join.table(et).on("EmployeeID", et, ValueCompare.Equals, "EmployeeID", e));
         expectedJoins.add(Join.table(t).on("TerritoryID", t, ValueCompare.Equals, "TerritoryID", et));
 
-        Query actualQuery = parser.parse(strQuery);
+        SelectQuery actualQuery = parser.parse(strQuery).get_select();
 
         assertEquals("Employees", actualQuery.get_table().get_name());
         assertEquals("e", actualQuery.get_table().get_alias());
@@ -149,8 +151,7 @@ public class QueryParserTests {
         List<String> expectedColumns = Arrays.asList("Id", "Salary", "Name", "Surname");
         List<Object> expectedValues = Arrays.asList((long)23, 23.045, "TestName", "TestSurname");
 
-        Query q = parser.parse(insertQuery);
-        assertEquals(Query.QueryType.Insert, q.get_type());
+        InsertQuery q = parser.parse(insertQuery).get_insert();
 
         List<Object> actualValues = q.get_insertValues();
         List<String> actualColumns = q.get_insertColumns();
@@ -169,9 +170,8 @@ public class QueryParserTests {
         String insertQuery = "insert into Accounts values (23, 23.045, 'TestName', 'TestSurname')";
 
         List<Object> expectedValues = Arrays.asList((long)23, 23.045, "TestName", "TestSurname");
-
-        Query q = parser.parse(insertQuery);
-        assertEquals(Query.QueryType.Insert, q.get_type());
+        
+        InsertQuery q = parser.parse(insertQuery).get_insert();
 
         List<Object> actualValues = q.get_insertValues();
         List<String> actualColumns = q.get_insertColumns();

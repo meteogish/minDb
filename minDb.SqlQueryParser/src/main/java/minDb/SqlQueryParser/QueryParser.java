@@ -1,7 +1,6 @@
 package minDb.SqlQueryParser;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import minDb.Core.Components.IQueryParser;
 import minDb.Core.Exceptions.ValidationException;
@@ -9,9 +8,9 @@ import minDb.Core.MetaInfo.ColumnMetaInfo;
 import minDb.Core.MetaInfo.TableMetaInfo;
 import minDb.Core.QueryModels.Condition;
 import minDb.Core.QueryModels.Join;
-import minDb.Core.QueryModels.Query;
 import minDb.Core.QueryModels.SelectColumn;
 import minDb.Core.QueryModels.Table;
+import minDb.Core.QueryModels.Queries.Query;
 import minDb.SqlQueryParser.Adapter.Create.ICreateQueryAdapter;
 import minDb.SqlQueryParser.Adapter.From.IFromTableAdapter;
 import minDb.SqlQueryParser.Adapter.Insert.IInsertQueryAdapter;

@@ -9,6 +9,7 @@ import com.google.inject.Injector;
 
 import minDb.Core.Components.IMetaInfoRepository;
 import minDb.Core.Components.IQueryParser;
+import minDb.Core.Components.ISelectQueryExecutor;
 import minDb.Core.Data.IDataRow;
 import minDb.Core.Data.IDataTable;
 import minDb.Core.Data.IRawTableReader;
@@ -16,8 +17,8 @@ import minDb.Core.Data.IRawTableWriter;
 import minDb.Core.Exceptions.ValidationException;
 import minDb.Core.MetaInfo.DatabaseMetaInfo;
 import minDb.Core.MetaInfo.TableMetaInfo;
-import minDb.Core.QueryModels.Query;
-import minDb.Core.QueryModels.Query.QueryType;
+import minDb.Core.QueryModels.Queries.Query;
+import minDb.Core.QueryModels.Queries.Query.QueryType;
 import minDb.Factory.Container;
 
 /**
@@ -35,10 +36,11 @@ public class App {
         try {
             String createQuery = "create table Accounts(Id INT, Name varchar(10), Salary double)";
             String insertQuery = "insert into Accounts values(45, null, 2456.23";
+            String selectQuery = "select Id, Salary from Accounts";
             IQueryParser parser = i.getInstance(IQueryParser.class);
             
             
-            Query query = parser.parse(insertQuery);
+            Query query = parser.parse(selectQuery);
             
             DatabaseMetaInfo db = repo.getDatabaseMetaInfo(Paths.get(dbFolder, "first.db").toString());
             
@@ -52,25 +54,16 @@ public class App {
             else if(query.get_type() == QueryType.Insert)
             {
                 IRawTableWriter writer = i.getInstance(IRawTableWriter.class);
-                writer.writeTo(db.get_tables().get(0), dbFolder, query.get_insertValues());
+                writer.writeTo(db.get_tables().get(0), dbFolder, query.get_insert().get_insertValues());
             }
-
-            IRawTableReader reader = i.getInstance(IRawTableReader.class);
-            IDataTable table = reader.readFrom(db.get_tables().get(0), dbFolder);
-
+            else if(query.get_type() == QueryType.Select)
+            {
+                ISelectQueryExecutor exec = i.getInstance(ISelectQueryExecutor.class);
+                IDataTable table = exec.execute(query.get_select(), db, dbFolder);
+                table.print();
+            }
             
-            // POC_DataReader dataReader = new POC_DataReader(db.get_tables().get(0), dbFolder);
-            // String[] values = new String[3];
-            // values[0] = "23";
-            // values[1] = "Zhenya";
-            // values[2] = "Kyshko";
-
-            // dataReader.Write(values);
-
-            // List<Object[]> objects = dataReader.read();
-            // System.out.println(objects.size());
         } catch (ValidationException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }

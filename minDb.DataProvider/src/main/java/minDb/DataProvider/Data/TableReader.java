@@ -80,7 +80,7 @@ public class TableReader implements IRawTableReader {
                         throw new ValidationException("Unsupported");
                     }
                 }
-                rows.add(new DataRow(header, values));
+                rows.add(new DataRow(values));
             }
         } catch (IOException e) {
             System.out.println(e.getMessage());

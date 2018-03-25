@@ -3,8 +3,8 @@ package minDb.Factory;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 
-import minDb.Factory.Modules.DataProviderModule;
 import minDb.Factory.Modules.MetaInfoRepositoryModule;
+import minDb.Factory.Modules.Data.DataProviderModule;
 import minDb.Factory.Modules.SqlQueryParser.SqlQueryParserModule;
 
 /**
