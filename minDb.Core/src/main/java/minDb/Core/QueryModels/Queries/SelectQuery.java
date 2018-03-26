@@ -29,11 +29,6 @@ public class SelectQuery {
             throw new ValidationException("Joins is null during build SelectQuery object.");
         }
 
-        if(where == null)
-        {
-            throw new ValidationException("Where is null during build SelectQuery object.");
-        }
-
         if(select == null)
         {
             throw new ValidationException("Select is null during build SelectQuery object.");

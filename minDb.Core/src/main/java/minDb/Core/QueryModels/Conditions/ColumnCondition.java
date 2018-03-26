@@ -8,12 +8,22 @@ import minDb.Core.QueryModels.Table;
  * ColumnConfition
  */
 public abstract class ColumnCondition {
-    public enum Compare
-    {
-        Equals,
-        NotEquals,
-        GreaterThan,
-        LessThan
+    public enum Compare {
+        EQUALS("="),
+        NOT_EQUALS("<>"),
+        GREATER(">"),
+        LESS("<");
+
+        private final String _type;
+
+        Compare(String type) {
+            _type = type;
+        }
+
+        @Override
+        public String toString() {
+            return _type;
+        }
     }
 
     private Column _leftColumn;

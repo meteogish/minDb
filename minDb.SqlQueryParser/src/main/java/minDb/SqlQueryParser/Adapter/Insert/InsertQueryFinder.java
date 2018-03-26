@@ -4,10 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.lang.model.util.ElementScanner6;
+
 import minDb.Core.Exceptions.ValidationException;
 import net.sf.jsqlparser.expression.DoubleValue;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.LongValue;
+import net.sf.jsqlparser.expression.NullValue;
 import net.sf.jsqlparser.expression.StringValue;
 import net.sf.jsqlparser.expression.operators.relational.ExpressionList;
 import net.sf.jsqlparser.expression.operators.relational.ItemsList;
@@ -71,6 +74,8 @@ public class InsertQueryFinder implements IInsertQueryAdapter, ItemsListVisitor 
 						return (Object) ((DoubleValue) e).getValue();
 					} else if (e instanceof StringValue) {
 						return (Object) ((StringValue) e).getValue();
+					} else if (e instanceof NullValue) {
+						return null;
 					} else {
 						return null;
 					}

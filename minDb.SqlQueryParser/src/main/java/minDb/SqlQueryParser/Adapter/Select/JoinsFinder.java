@@ -5,6 +5,7 @@ import java.util.List;
 
 import minDb.Core.Exceptions.ValidationException;
 import minDb.Core.QueryModels.Conditions.ColumnCondition.Compare;
+import minDb.Extensions.StringExtenstions;
 import minDb.Core.QueryModels.Conditions.JoinColumnCondition;
 import minDb.Core.QueryModels.Join;
 import minDb.Core.QueryModels.Table;
@@ -59,7 +60,7 @@ public class JoinsFinder implements IJoinAdapter {
                 minDb.Core.QueryModels.Column rightColumn = getColumnFromColumnExpression(
                         (Column) onExpresison.getRightExpression(), join, fromTable);
 
-                return new JoinColumnCondition(leftColumn, rightColumn, Compare.Equals);
+                return new JoinColumnCondition(leftColumn, rightColumn, Compare.EQUALS);
             } else {
                 throw new ValidationException("Not supported yet");
             }
@@ -74,6 +75,11 @@ public class JoinsFinder implements IJoinAdapter {
         net.sf.jsqlparser.schema.Table table = column.getTable();
         if (table != null) {
             String tableName = table.getName();
+            if(StringExtenstions.IsNullOrEmpty(tableName))
+            {
+                throw new ValidationException("Column without table name/alias");
+            }
+            
             Table columnTable = null;
             if (tableName.equalsIgnoreCase(join.get_table().get_alias())) {
                 columnTable = join.get_table();

@@ -1,6 +1,8 @@
 package minDb.SqlQueryParser;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import minDb.Core.Components.IQueryParser;
 import minDb.Core.Exceptions.ValidationException;
@@ -52,7 +54,7 @@ public class QueryParser implements IQueryParser {
         _whereFinder = whereFinder;
     }
 
-    public Query parse(String str) {
+    public Query parse(String str) throws ValidationException{
         Statement statement;
         try {
             statement = CCJSqlParserUtil.parse(str);
@@ -71,11 +73,8 @@ public class QueryParser implements IQueryParser {
                 throw new ValidationException("Unsupported statement");
             }
         } catch (JSQLParserException e) {
-            System.out.println(e.getMessage());
-        } catch (ValidationException e) {
-            System.out.println(e.getMessage());
+            throw new ValidationException("Query is not valid");
         }
-        return null;
     }
 
     private Query buildInsertQuery(Insert statement) throws ValidationException {
@@ -98,7 +97,12 @@ public class QueryParser implements IQueryParser {
         Table from = _fromtableFinder.getTableFromItem(plainSelect.getFromItem());
         List<SelectColumn> select = _selectColumnsFinder.getSelectColumns(plainSelect);
         List<Join> join = _joinsFinder.getJoins(plainSelect.getJoins(), from);
-        ICondition where = _whereFinder.getWhereCondition(plainSelect);
+
+        List<Table> tables = new ArrayList<Table>(join.size() + 1);
+        tables.add(from);
+        join.forEach(j -> tables.add(j.get_table()));
+
+        ICondition where = _whereFinder.getWhereCondition(plainSelect, tables);
         return Query.buildSelectQuery(select, from, join, where);
     }
 }

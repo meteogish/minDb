@@ -2,6 +2,7 @@ package minDb.QueryParser;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,6 +32,8 @@ import minDb.SqlQueryParser.Adapter.Select.JoinsFinder;
 import minDb.SqlQueryParser.Adapter.Select.SelectColumnsFinder;
 import minDb.SqlQueryParser.Adapter.Select.WhereFinder;
 import minDb.Core.QueryModels.Conditions.ICondition;
+import minDb.Core.QueryModels.Conditions.LogicalCondition;
+import minDb.Core.QueryModels.Conditions.ValueColumnCondition;
 
 /**
  * QueryBuilderTests
@@ -85,8 +88,8 @@ public class QueryParserTests {
         Table t = new Table("Territories", "t");
 
         List<Join> expectedJoins = new ArrayList<Join>(2);
-        expectedJoins.add(Join.table(et).on("EmployeeID", et, Compare.Equals, "EmployeeID", e));
-        expectedJoins.add(Join.table(t).on("TerritoryID", t, Compare.Equals, "TerritoryID", et));
+        expectedJoins.add(Join.table(et).on("EmployeeID", et, Compare.EQUALS, "EmployeeID", e));
+        expectedJoins.add(Join.table(t).on("TerritoryID", t, Compare.EQUALS, "TerritoryID", et));
 
         SelectQuery actualQuery = parser.parse(strQuery).get_select();
 
@@ -119,14 +122,14 @@ public class QueryParserTests {
 
     @Test
     public void CreateTable_Test() throws ValidationException {
-        String createQuery = "create table Customers(Id integer, Name varchar(10))";
+        String createQuery = "create table Customers(Id INT, Name varchar(10))";
         // String createQuery = "create database Test";
 
         String expectedTableName = "Customers";
 
         List<ColumnMetaInfo> expectedColumns = new ArrayList<ColumnMetaInfo>(2);
         expectedColumns.add(new ColumnMetaInfo(new ColumnType(ColumnType.Type.INT, null), "Id"));
-        expectedColumns.add(new ColumnMetaInfo(new ColumnType(ColumnType.Type.INT, 10), "Name"));
+        expectedColumns.add(new ColumnMetaInfo(new ColumnType(ColumnType.Type.VARCHAR, 10), "Name"));
 
         Query actualQuery = parser.parse(createQuery);
         TableMetaInfo info = actualQuery.get_createTableInfo();
@@ -188,12 +191,57 @@ public class QueryParserTests {
     }
 
     @Test
-    public void WhereTest()
+    public void WhereAndTest_WithJoin()
     {
-        String insertQuery = "select * from Account where Id = 23 and Surname = 'HAHA'";
+        String insertQuery = "select * from Account r join Info i on i.Id = r.Df where i.Id <> 23 and r.Surname > 'HAHA'";
 
-        SelectQuery q = parser.parse(insertQuery).get_select();
+        SelectQuery q = null;
+		try {
+			q = parser.parse(insertQuery).get_select();
+		} catch (ValidationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+        LogicalCondition and = (LogicalCondition) q.get_where();
+        ValueColumnCondition<Object> left = (ValueColumnCondition<Object>) and.get_leftCondition();
+        ValueColumnCondition<Object> right = (ValueColumnCondition<Object>) and.get_righCondition();
+
+        assertEquals("Id", left.get_leftColumn().get_name());
+        assertEquals("Info", left.get_leftColumn().get_table().get_name());
+        assertEquals(23, ((Long)left.get_value()).intValue());
+        assertEquals(Compare.NOT_EQUALS, left.get_compare());
+
+        assertEquals("Surname", right.get_leftColumn().get_name());
+        assertEquals("Account", right.get_leftColumn().get_table().get_name());
+        assertEquals("HAHA", right.get_value());
+        assertEquals(Compare.GREATER, right.get_compare());
         
-        assertNotNull(q);
+    }
+
+    @Test
+    public void Where_ReverseCondition_AndIsNullTest()
+    {
+        String insertQuery = "select * from Account r where 23 < Id and r.Surname is null";
+
+        SelectQuery q = null;
+		try {
+			q = parser.parse(insertQuery).get_select();
+		} catch (ValidationException e) {
+			e.printStackTrace();
+		}
+
+        LogicalCondition and = (LogicalCondition) q.get_where();
+        ValueColumnCondition<Object> left = (ValueColumnCondition<Object>) and.get_leftCondition();
+        ValueColumnCondition<Object> right = (ValueColumnCondition<Object>) and.get_righCondition();
+
+        assertEquals("Id", left.get_leftColumn().get_name());
+        assertEquals("Account", left.get_leftColumn().get_table().get_name());
+        assertEquals(23, ((Long)left.get_value()).intValue());
+        assertEquals(Compare.LESS, left.get_compare());
+
+        assertEquals("Surname", right.get_leftColumn().get_name());
+        assertEquals("Account", right.get_leftColumn().get_table().get_name());
+        assertNull(right.get_value());
     }
 }

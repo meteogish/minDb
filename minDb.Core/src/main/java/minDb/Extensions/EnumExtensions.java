@@ -6,7 +6,7 @@ package minDb.Extensions;
 public class EnumExtensions {
     public static <T extends Enum<?>> T parse(Class<T> enumeration, String strValue) {
         for (T each : enumeration.getEnumConstants()) {
-            if (each.name().compareToIgnoreCase(strValue) == 0) {
+            if (each.toString().compareToIgnoreCase(strValue) == 0) {
                 return each;
             }
         }

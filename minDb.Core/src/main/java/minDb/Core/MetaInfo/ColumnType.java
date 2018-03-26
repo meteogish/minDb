@@ -10,7 +10,8 @@ public class ColumnType {
             _type = type;
         }
 
-        public String getKeyWord() {
+        @Override
+        public String toString() {
             return _type;
         }
     }
