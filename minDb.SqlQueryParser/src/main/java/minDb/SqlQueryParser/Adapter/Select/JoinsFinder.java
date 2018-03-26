@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import minDb.Core.Exceptions.ValidationException;
+import minDb.Core.QueryModels.Conditions.ColumnCondition.Compare;
+import minDb.Core.QueryModels.Conditions.JoinColumnCondition;
 import minDb.Core.QueryModels.Join;
-import minDb.Core.QueryModels.JoinColumnCondition;
 import minDb.Core.QueryModels.Table;
-import minDb.Core.QueryModels.ValueCompare;
 import minDb.SqlQueryParser.Adapter.From.IFromTableAdapter;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.operators.conditional.AndExpression;
@@ -59,7 +59,7 @@ public class JoinsFinder implements IJoinAdapter {
                 minDb.Core.QueryModels.Column rightColumn = getColumnFromColumnExpression(
                         (Column) onExpresison.getRightExpression(), join, fromTable);
 
-                return new JoinColumnCondition(leftColumn, rightColumn, ValueCompare.Equals);
+                return new JoinColumnCondition(leftColumn, rightColumn, Compare.Equals);
             } else {
                 throw new ValidationException("Not supported yet");
             }

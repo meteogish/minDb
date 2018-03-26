@@ -1,18 +1,28 @@
-package minDb.Core.QueryModels;
+package minDb.Core.QueryModels.Conditions;
 
 import minDb.Core.Exceptions.ValidationException;
+import minDb.Core.QueryModels.Column;
+import minDb.Core.QueryModels.Table;
 
 /**
  * ColumnConfition
  */
-public abstract class ColumnCondition extends Condition {
+public abstract class ColumnCondition {
+    public enum Compare
+    {
+        Equals,
+        NotEquals,
+        GreaterThan,
+        LessThan
+    }
+
     private Column _leftColumn;
-    private ValueCompare _compare;
+    private Compare _compare;
 
     /**
      * @return the _compare
      */
-    public ValueCompare get_compare() {
+    public Compare get_compare() {
         return _compare;
     }
 
@@ -23,7 +33,7 @@ public abstract class ColumnCondition extends Condition {
         return _leftColumn;
     }
 
-	public ColumnCondition(Table table, String column, ValueCompare compare) throws ValidationException {
+	public ColumnCondition(Table table, String column, Compare compare) throws ValidationException {
         if(compare == null)
         {
             throw new ValidationException("Compare parameter is null.");
@@ -33,7 +43,7 @@ public abstract class ColumnCondition extends Condition {
         _compare = compare;
     }
     
-    public ColumnCondition(Column leftColumn, ValueCompare compare) throws ValidationException {
+    public ColumnCondition(Column leftColumn, Compare compare) throws ValidationException {
         if(leftColumn == null)
         {
             throw new ValidationException("Column parameter is null.");

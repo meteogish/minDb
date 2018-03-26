@@ -18,7 +18,7 @@ import minDb.Core.QueryModels.Aggregation;
 import minDb.Core.QueryModels.Join;
 import minDb.Core.QueryModels.SelectColumn;
 import minDb.Core.QueryModels.Table;
-import minDb.Core.QueryModels.ValueCompare;
+import minDb.Core.QueryModels.Conditions.ColumnCondition.Compare;
 import minDb.Core.QueryModels.Queries.InsertQuery;
 import minDb.Core.QueryModels.Queries.Query;
 import minDb.Core.QueryModels.Queries.SelectQuery;
@@ -29,6 +29,8 @@ import minDb.SqlQueryParser.Adapter.From.IFromTableAdapter;
 import minDb.SqlQueryParser.Adapter.Insert.InsertQueryFinder;
 import minDb.SqlQueryParser.Adapter.Select.JoinsFinder;
 import minDb.SqlQueryParser.Adapter.Select.SelectColumnsFinder;
+import minDb.SqlQueryParser.Adapter.Select.WhereFinder;
+import minDb.Core.QueryModels.Conditions.ICondition;
 
 /**
  * QueryBuilderTests
@@ -45,7 +47,8 @@ public class QueryParserTests {
             from,
             new InsertQueryFinder(),
             new SelectColumnsFinder(),
-            new JoinsFinder(from));
+            new JoinsFinder(from),
+            new WhereFinder());
     }
 
     @Test
@@ -82,8 +85,8 @@ public class QueryParserTests {
         Table t = new Table("Territories", "t");
 
         List<Join> expectedJoins = new ArrayList<Join>(2);
-        expectedJoins.add(Join.table(et).on("EmployeeID", et, ValueCompare.Equals, "EmployeeID", e));
-        expectedJoins.add(Join.table(t).on("TerritoryID", t, ValueCompare.Equals, "TerritoryID", et));
+        expectedJoins.add(Join.table(et).on("EmployeeID", et, Compare.Equals, "EmployeeID", e));
+        expectedJoins.add(Join.table(t).on("TerritoryID", t, Compare.Equals, "TerritoryID", et));
 
         SelectQuery actualQuery = parser.parse(strQuery).get_select();
 
@@ -182,5 +185,15 @@ public class QueryParserTests {
         for (int i = 0; i < expectedValues.size(); ++i) {
             assertEquals(expectedValues.get(i), actualValues.get(i));
         }
+    }
+
+    @Test
+    public void WhereTest()
+    {
+        String insertQuery = "select * from Account where Id = 23 and Surname = 'HAHA'";
+
+        SelectQuery q = parser.parse(insertQuery).get_select();
+        
+        assertNotNull(q);
     }
 }

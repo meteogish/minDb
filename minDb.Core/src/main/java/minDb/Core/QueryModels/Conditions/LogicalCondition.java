@@ -1,15 +1,19 @@
-package minDb.Core.QueryModels;
+package minDb.Core.QueryModels.Conditions;
 
 /**
  * LogicalCondition
  */
-public class LogicalCondition extends Condition {
-    private Condition _leftCondition;
-    private Condition _righCondition;
+public class LogicalCondition implements ICondition {
+	public enum LogicalCompare {
+		And,
+		Or    
+	}
+
+    private ICondition _leftCondition;
+    private ICondition _righCondition;
     private LogicalCompare _compare;
     
-    public LogicalCondition(Condition left, LogicalCompare compare, Condition right) {
-        super();
+    public LogicalCondition(ICondition left, LogicalCompare compare, ICondition right) {
         _leftCondition = left;
         _compare = compare;
         _righCondition = right;
@@ -18,14 +22,14 @@ public class LogicalCondition extends Condition {
 	/**
 	 * @return the _leftCondition
 	 */
-	public Condition get_leftCondition() {
+	public ICondition get_leftCondition() {
 		return _leftCondition;
 	}
 
 	/**
 	 * @return the _righCondition
 	 */
-	public Condition get_righCondition() {
+	public ICondition get_righCondition() {
 		return _righCondition;
 	}
 

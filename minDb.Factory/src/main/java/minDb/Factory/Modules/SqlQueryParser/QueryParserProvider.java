@@ -10,6 +10,7 @@ import minDb.SqlQueryParser.Adapter.From.IFromTableAdapter;
 import minDb.SqlQueryParser.Adapter.Insert.IInsertQueryAdapter;
 import minDb.SqlQueryParser.Adapter.Select.IJoinAdapter;
 import minDb.SqlQueryParser.Adapter.Select.ISelectAdapter;
+import minDb.SqlQueryParser.Adapter.Select.IWhereConditionAdapter;
 
 /**
  * SqlQueryParserProvider
@@ -20,6 +21,7 @@ public class QueryParserProvider implements Provider<IQueryParser>{
     private IInsertQueryAdapter _insertValuesFinder;
     private ISelectAdapter _selectColumnsFinder;
     private IJoinAdapter _joinsFinder;
+    private IWhereConditionAdapter _whereFinder;
 
     @Inject
     public QueryParserProvider(
@@ -27,15 +29,17 @@ public class QueryParserProvider implements Provider<IQueryParser>{
         IFromTableAdapter fromtableFinder,
         IInsertQueryAdapter insertValuesFinder,
         ISelectAdapter selectColumnsFinder,
-        IJoinAdapter joinsFinder) {
+        IJoinAdapter joinsFinder,
+        IWhereConditionAdapter whereFinder) {
         _createColumnsFinder = createFinder;
         _fromtableFinder = fromtableFinder;
         _insertValuesFinder = insertValuesFinder;
         _selectColumnsFinder = selectColumnsFinder;
         _joinsFinder = joinsFinder;
+        _whereFinder = whereFinder;
     }
 
 	public IQueryParser get() {
-		return new QueryParser(_createColumnsFinder, _fromtableFinder, _insertValuesFinder, _selectColumnsFinder, _joinsFinder);
-    }    
+		return new QueryParser(_createColumnsFinder, _fromtableFinder, _insertValuesFinder, _selectColumnsFinder, _joinsFinder, _whereFinder);
+    }
 }

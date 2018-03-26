@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import minDb.Core.Exceptions.ValidationException;
+import minDb.Core.QueryModels.Conditions.JoinColumnCondition;
+import minDb.Core.QueryModels.Conditions.ColumnCondition.Compare;
 
 /**
  * Join
@@ -23,12 +25,12 @@ public class Join {
         _table = table;
     }
 
-    public Join on(String leftColumn, Table leftTable, ValueCompare compare, String rightColumn, Table rightTable) throws ValidationException {
+    public Join on(String leftColumn, Table leftTable, Compare compare, String rightColumn, Table rightTable) throws ValidationException {
         _columns.add(new JoinColumnCondition(leftTable, leftColumn, compare, rightTable, rightColumn));
         return this;
     }
 
-    // public <T> Join on(String leftColumn, Table leftTable, ValueCompare compare, T value) throws ValidationException {
+    // public <T> Join on(String leftColumn, Table leftTable, Compare compare, T value) throws ValidationException {
     //     _columns.add(new ValueColumnCondition<T>(leftTable, leftColumn, compare, value));
     //     return this;
     // }

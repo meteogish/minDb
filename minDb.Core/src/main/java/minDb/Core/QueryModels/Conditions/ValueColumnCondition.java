@@ -1,11 +1,12 @@
-package minDb.Core.QueryModels;
+package minDb.Core.QueryModels.Conditions;
 
 import minDb.Core.Exceptions.ValidationException;
+import minDb.Core.QueryModels.Table;
 
 public class ValueColumnCondition<T> extends ColumnCondition {
     private T _value;
     
-    public ValueColumnCondition(Table table, String column, ValueCompare compare, T value) throws ValidationException{
+    public ValueColumnCondition(Table table, String column, Compare compare, T value) throws ValidationException{
 		super(table, column, compare);
 		if(value == null)
 		{

@@ -1,19 +1,21 @@
-package minDb.Core.QueryModels;
+package minDb.Core.QueryModels.Conditions;
 
 import minDb.Core.Exceptions.ValidationException;
+import minDb.Core.QueryModels.Column;
+import minDb.Core.QueryModels.Table;
 
 /**
  * ColumnConfition
  */
-public class JoinColumnCondition extends ColumnCondition {
+public class JoinColumnCondition extends ColumnCondition implements ICondition {
 	private Column _rightColumn;
     
-    public JoinColumnCondition(Table leftTable, String leftColumn, ValueCompare compare, Table rightTable, String rightColumn) throws ValidationException {
+    public JoinColumnCondition(Table leftTable, String leftColumn, Compare compare, Table rightTable, String rightColumn) throws ValidationException {
 		super(leftTable, leftColumn, compare);
 		_rightColumn = new Column(rightTable, rightColumn);
 	}
 	
-	public JoinColumnCondition(Column leftColumn, Column rightColumn, ValueCompare compare) throws ValidationException {
+	public JoinColumnCondition(Column leftColumn, Column rightColumn, Compare compare) throws ValidationException {
 		super(leftColumn, compare);
 
 		if(rightColumn == null)

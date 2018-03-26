@@ -6,17 +6,19 @@ import minDb.Core.Components.IQueryParser;
 import minDb.Core.Exceptions.ValidationException;
 import minDb.Core.MetaInfo.ColumnMetaInfo;
 import minDb.Core.MetaInfo.TableMetaInfo;
-import minDb.Core.QueryModels.Condition;
 import minDb.Core.QueryModels.Join;
 import minDb.Core.QueryModels.SelectColumn;
 import minDb.Core.QueryModels.Table;
+import minDb.Core.QueryModels.Conditions.ICondition;
 import minDb.Core.QueryModels.Queries.Query;
 import minDb.SqlQueryParser.Adapter.Create.ICreateQueryAdapter;
 import minDb.SqlQueryParser.Adapter.From.IFromTableAdapter;
 import minDb.SqlQueryParser.Adapter.Insert.IInsertQueryAdapter;
 import minDb.SqlQueryParser.Adapter.Select.IJoinAdapter;
 import minDb.SqlQueryParser.Adapter.Select.ISelectAdapter;
+import minDb.SqlQueryParser.Adapter.Select.IWhereConditionAdapter;
 import net.sf.jsqlparser.JSQLParserException;
+import net.sf.jsqlparser.expression.operators.conditional.AndExpression;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
 import net.sf.jsqlparser.statement.Statement;
 import net.sf.jsqlparser.statement.create.table.CreateTable;
@@ -33,18 +35,21 @@ public class QueryParser implements IQueryParser {
     private IInsertQueryAdapter _insertAdapter;
     private ISelectAdapter _selectColumnsFinder;
     private IJoinAdapter _joinsFinder;
+    private IWhereConditionAdapter _whereFinder;
 
     public QueryParser(
         ICreateQueryAdapter createFinder,
         IFromTableAdapter fromtableFinder,
         IInsertQueryAdapter insertValuesFinder,
         ISelectAdapter selectColumnsFinder,
-        IJoinAdapter joinsFinder) {
+        IJoinAdapter joinsFinder,
+        IWhereConditionAdapter whereFinder) {
         _createColumnsFinder = createFinder;
         _fromtableFinder = fromtableFinder;
         _insertAdapter = insertValuesFinder;
         _selectColumnsFinder = selectColumnsFinder;
         _joinsFinder = joinsFinder;
+        _whereFinder = whereFinder;
     }
 
     public Query parse(String str) {
@@ -93,6 +98,7 @@ public class QueryParser implements IQueryParser {
         Table from = _fromtableFinder.getTableFromItem(plainSelect.getFromItem());
         List<SelectColumn> select = _selectColumnsFinder.getSelectColumns(plainSelect);
         List<Join> join = _joinsFinder.getJoins(plainSelect.getJoins(), from);
-        return Query.buildSelectQuery(select, from, join, new Condition());
+        ICondition where = _whereFinder.getWhereCondition(plainSelect);
+        return Query.buildSelectQuery(select, from, join, where);
     }
 }

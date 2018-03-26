@@ -3,10 +3,10 @@ package minDb.Core.QueryModels.Queries;
 import java.util.List;
 
 import minDb.Core.Exceptions.ValidationException;
-import minDb.Core.QueryModels.Condition;
 import minDb.Core.QueryModels.Join;
 import minDb.Core.QueryModels.SelectColumn;
 import minDb.Core.QueryModels.Table;
+import minDb.Core.QueryModels.Conditions.ICondition;
 
 /**
  * SelectQuery
@@ -15,9 +15,9 @@ public class SelectQuery {
     private List<SelectColumn> _select;
     private Table _table;
     private List<Join> _joins; 
-    private Condition _where;
+    private ICondition _where;
 
-    public SelectQuery(List<SelectColumn> select, Table from, List<Join> joins, Condition where) throws ValidationException
+    public SelectQuery(List<SelectColumn> select, Table from, List<Join> joins, ICondition where) throws ValidationException
     {
         if(from == null)
         {
@@ -66,7 +66,7 @@ public class SelectQuery {
 	/**
 	 * @return the _where
 	 */
-	public Condition get_where() {
+	public ICondition get_where() {
 		return _where;
 	}
 

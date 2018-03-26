@@ -37,7 +37,7 @@ public class SelectColumnsFinder implements ISelectAdapter {
         
         Expression columnExpression = selectExpressionItem.getExpression();
 
-        if(Column.class.isInstance(columnExpression))
+        if(columnExpression instanceof Column)
         {
            return new SelectColumn(((Column)columnExpression).getColumnName(), alias);        
         }

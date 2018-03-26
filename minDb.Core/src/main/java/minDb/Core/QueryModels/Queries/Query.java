@@ -4,11 +4,10 @@ import java.util.List;
 
 import minDb.Core.Exceptions.ValidationException;
 import minDb.Core.MetaInfo.TableMetaInfo;
-import minDb.Core.QueryModels.ColumnCondition;
-import minDb.Core.QueryModels.Condition;
 import minDb.Core.QueryModels.Join;
 import minDb.Core.QueryModels.SelectColumn;
 import minDb.Core.QueryModels.Table;
+import minDb.Core.QueryModels.Conditions.ICondition;
 
 /**
  * GodQuery
@@ -38,7 +37,7 @@ public class Query {
         return q;
     }
 
-    public static Query buildSelectQuery(List<SelectColumn> select, Table from, List<Join> joins, Condition where) throws ValidationException
+    public static Query buildSelectQuery(List<SelectColumn> select, Table from, List<Join> joins, ICondition where) throws ValidationException
     {
         Query q = new Query();
         q._type = QueryType.Select;
