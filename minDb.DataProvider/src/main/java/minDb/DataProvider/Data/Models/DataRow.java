@@ -1,13 +1,11 @@
-package minDb.DataProvider.Data;
+package minDb.DataProvider.Data.Models;
 
 import java.util.List;
-
-import minDb.Core.Data.IDataRow;
 
 /**
  * DataRow
  */
-public class DataRow implements IDataRow {
+public class DataRow implements minDb.Core.Components.Data.IDataRow {
     private List<Object> _values;
     
     public DataRow(List<Object> values) {

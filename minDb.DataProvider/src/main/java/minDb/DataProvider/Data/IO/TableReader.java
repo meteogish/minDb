@@ -1,4 +1,4 @@
-package minDb.DataProvider.Data;
+package minDb.DataProvider.Data.IO;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -7,64 +7,70 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
-import minDb.Core.Data.IDataRow;
-import minDb.Core.Data.IDataTable;
-import minDb.Core.Data.IRawTableReader;
+import minDb.Core.Components.Data.IRawTableReader;
+import minDb.Core.Components.Data.ITypeSizeProvider;
 import minDb.Core.Exceptions.ValidationException;
 import minDb.Core.MetaInfo.ColumnType;
-import minDb.Core.MetaInfo.TableMetaInfo;
 import minDb.Core.MetaInfo.ColumnType.Type;
-import minDb.Extensions.ColumnTypeExtension;
+import minDb.Core.MetaInfo.TableMetaInfo;
 
 /**
  * TableReader
  */
-public class TableReader implements IRawTableReader {
+public class TableReader extends BaseIOProcessor implements IRawTableReader {
+    public TableReader(ITypeSizeProvider typeSizeProvider) {
+        super(typeSizeProvider);
+    }
 
-    public IDataTable readFrom(TableMetaInfo tableInfo, String dbFolder) throws ValidationException {
-        File tableFile = findFile(tableInfo.get_tableName(), dbFolder);
-        
+    public List<List<Object>> readFrom(TableMetaInfo tableInfo, File tableFile) throws ValidationException {
+        return readFrom(tableInfo, tableFile,
+                IntStream.range(0, tableInfo.get_columnsInfo().size()).boxed().collect(Collectors.toList()));
+    }
+
+    public List<List<Object>> readFrom(TableMetaInfo tableInfo, File tableFile, List<Integer> selectColumnIndexes)
+            throws ValidationException {
         BufferedInputStream file;
         try {
             file = new BufferedInputStream(new FileInputStream(tableFile));
         } catch (FileNotFoundException e) {
             throw new ValidationException("Table file not found");
         }
-        
-        List<IDataRow> rows = new ArrayList<IDataRow>();
-        List<String> header = tableInfo.get_columnsInfo().stream().map(p -> p.get_name()).collect(Collectors.toList());
+
+        // List<String> header = tableInfo.get_columnsInfo().stream().map(p -> p.get_name()).collect(Collectors.toList());
+
+        List<List<Object>> rows = new ArrayList<List<Object>>();
         try {
-            int[] offsetTable = getOffsetTable(tableInfo, tableInfo.get_columnsInfo().size() / Byte.SIZE + 1);
+            int[] offsetTable = getOffsetTable(tableInfo);
+
             int rowSize = offsetTable[offsetTable.length - 1];
+
             while (file.available() > 0) {
-                byte[] row = new byte[rowSize];                
+                byte[] row = new byte[rowSize];
                 file.read(row);
                 ByteBuffer buffer = ByteBuffer.wrap(row);
-                
+
                 byte[] nullsInfo = new byte[offsetTable[0]];
                 buffer.get(nullsInfo);
                 BitSet bs = BitSet.valueOf(nullsInfo);
-                
+
                 List<Object> values = new ArrayList<Object>(tableInfo.get_columnsInfo().size());
 
-                for (int i = 0; i < tableInfo.get_columnsInfo().size(); ++i) {
-                    ColumnType columnType = tableInfo.get_columnsInfo().get(i).get_columnType();
+                for (int i = 0; i < selectColumnIndexes.size(); ++i) {
+                    int columnIndex = selectColumnIndexes.get(i);
+                    ColumnType columnType = tableInfo.get_columnsInfo().get(columnIndex).get_columnType();
 
-                    if(bs.get(i))
-                    {
+                    if (bs.get(columnIndex)) {
                         values.add(null);
                         continue;
                     }
 
-                    int off = offsetTable[i];
+                    int off = offsetTable[columnIndex];
                     buffer.position(off);
                     if (columnType.get_type() == Type.DOUBLE) {
                         Double value = buffer.getDouble();
@@ -80,7 +86,7 @@ public class TableReader implements IRawTableReader {
                         throw new ValidationException("Unsupported");
                     }
                 }
-                rows.add(new DataRow(values));
+                rows.add(values);
             }
         } catch (IOException e) {
             System.out.println(e.getMessage());
@@ -91,31 +97,6 @@ public class TableReader implements IRawTableReader {
                 System.out.println(e.getMessage());
             }
         }
-        return new DataTable(header, rows);
-    }
-
-    private File findFile(String tableName, String dbFolder) throws ValidationException {
-        Path fullFilePath = Paths.get(dbFolder, tableName + ".tb");
-        File tableFile = new File(fullFilePath.toUri());
-
-        if (!tableFile.exists()) {
-            throw new ValidationException("Table file not exists.");
-        }
-        return tableFile;
-    }
-
-    private int[] getOffsetTable(TableMetaInfo tableInfo, int nullInfoOffset) throws ValidationException {
-        int cols = tableInfo.get_columnsInfo().size();
-        int[] offsetTable = new int[cols + 1];
-
-        offsetTable[0] = nullInfoOffset;
-
-        for (int i = 1; i < cols + 1; i++) {
-            int index = i - 1;
-            int size = ColumnTypeExtension.getSize(tableInfo.get_columnsInfo().get(index).get_columnType());
-            offsetTable[i] = offsetTable[index] + size;
-        }
-
-        return offsetTable;
+        return rows;
     }
 }

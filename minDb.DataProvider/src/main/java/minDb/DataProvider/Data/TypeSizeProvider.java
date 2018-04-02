@@ -1,16 +1,17 @@
-package minDb.Extensions;
+package minDb.DataProvider.Data;
 
+import minDb.Core.Components.Data.ITypeSizeProvider;
 import minDb.Core.Exceptions.ValidationException;
 import minDb.Core.MetaInfo.ColumnType;
 
 /**
- * ColumnTypeSizeExtension
+ * TypeSizeProvider
  */
-public class ColumnTypeExtension {
+public class TypeSizeProvider implements ITypeSizeProvider {
 
-    public static int getSize(ColumnType columnType) throws ValidationException
-    {
-        int typeSize = -1;
+	@Override
+	public int getBytesSize(ColumnType columnType) throws ValidationException {
+		int typeSize = -1;
         switch (columnType.get_type()) {
             case DOUBLE:
                 typeSize = Double.SIZE / Byte.SIZE;
@@ -25,6 +26,7 @@ public class ColumnTypeExtension {
                 throw new ValidationException("Not supported type");
         }
         return typeSize;
-    }
+	}
+
     
 }

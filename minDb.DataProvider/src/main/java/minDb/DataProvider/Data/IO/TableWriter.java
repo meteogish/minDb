@@ -1,4 +1,4 @@
-package minDb.DataProvider.Data;
+package minDb.DataProvider.Data.IO;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -7,27 +7,26 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.BitSet;
 import java.util.List;
 
-import minDb.Core.Data.IRawTableWriter;
+import minDb.Core.Components.Data.IRawTableWriter;
+import minDb.Core.Components.Data.ITypeSizeProvider;
 import minDb.Core.Exceptions.ValidationException;
 import minDb.Core.MetaInfo.ColumnType;
 import minDb.Core.MetaInfo.ColumnType.Type;
 import minDb.Core.MetaInfo.TableMetaInfo;
-import minDb.Extensions.ColumnTypeExtension;
 
 /**
  * TableWriter
  */
-public class TableWriter implements IRawTableWriter {
+public class TableWriter extends BaseIOProcessor implements IRawTableWriter {
  
-    public void writeTo(TableMetaInfo tableInfo, String dbFolder, List<Object> insertValues)
-            throws ValidationException {
-        File tableFile = findFile(tableInfo.get_tableName(), dbFolder);
-        
+    public TableWriter(ITypeSizeProvider typeSizeProvider) {
+        super(typeSizeProvider);
+    }
+
+    public void writeTo(TableMetaInfo tableInfo, File tableFile, List<Object> insertValues) throws ValidationException {
         BufferedOutputStream file; 
         try {
             file = new BufferedOutputStream(new FileOutputStream(tableFile, true));
@@ -39,7 +38,7 @@ public class TableWriter implements IRawTableWriter {
             BitSet bs = getRowNullsInfo(tableInfo, insertValues);
             byte[] nullsInfo = bs.toByteArray();
             
-            int[] offsetTable = getOffsetTable(tableInfo, nullsInfo.length);
+            int[] offsetTable = getOffsetTable(tableInfo);
             
             int rowSize = offsetTable[offsetTable.length - 1];
             
@@ -67,7 +66,7 @@ public class TableWriter implements IRawTableWriter {
                     buffer.put(length);         
                     buffer.put(bytes);
                 } else if (columnType.get_type() == Type.INT) {
-                    Integer integer = ((Long)value).intValue();
+                    Integer integer = ((Number)value).intValue();
                     buffer.putInt(integer);
                 } else {
                     throw new ValidationException("Unsupported");
@@ -84,31 +83,6 @@ public class TableWriter implements IRawTableWriter {
                 System.out.println(e.getMessage());
             }
         }
-    }
-
-    private File findFile(String tableName, String dbFolder) throws ValidationException {
-        Path fullFilePath = Paths.get(dbFolder, tableName + ".tb");
-        File tableFile = new File(fullFilePath.toUri());
-
-        if (!tableFile.exists()) {
-            throw new ValidationException("Table file not exists.");
-        }
-        return tableFile;
-    }
-
-    private int[] getOffsetTable(TableMetaInfo tableInfo, int nullInfoOffset) throws ValidationException {
-        int cols = tableInfo.get_columnsInfo().size();
-        int[] offsetTable = new int[cols + 1];
-
-        offsetTable[0] = nullInfoOffset;
-
-        for (int i = 1; i < cols + 1; i++) {
-            int index = i - 1;
-            int size = ColumnTypeExtension.getSize(tableInfo.get_columnsInfo().get(index).get_columnType());
-            offsetTable[i] = offsetTable[index] + size;
-        }
-
-        return offsetTable;
     }
 
     private BitSet getRowNullsInfo(TableMetaInfo tableInfo, List<Object> values) {

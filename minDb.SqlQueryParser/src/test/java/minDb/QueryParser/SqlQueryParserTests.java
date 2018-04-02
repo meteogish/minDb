@@ -38,7 +38,7 @@ import minDb.Core.QueryModels.Conditions.ValueColumnCondition;
 /**
  * QueryBuilderTests
  */
-public class QueryParserTests {
+public class SqlQueryParserTests {
 
     QueryParser parser;
 
@@ -80,7 +80,8 @@ public class QueryParserTests {
 
     @Test
     public void Joins_PositiveTest() throws ValidationException {
-        String strQuery = "select * from Employees e " + "join EmployeeTerritories et on et.EmployeeID = e.EmployeeID "
+        String strQuery = "select * from Employees e " 
+                + "join EmployeeTerritories et on et.EmployeeID = e.EmployeeID "
                 + "join Territories t on t.TerritoryID = e.TerritoryID";
 
         Table e = new Table("Employees", "e");

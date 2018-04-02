@@ -1,4 +1,4 @@
-package minDb.Core.Data;
+package minDb.Core.Components.Data;
 
 import java.util.List;
 
@@ -13,5 +13,6 @@ public interface IDataTable {
     List<String> getHeader();
     void select(List<SelectColumn> selectColumns) throws ValidationException;
     void print();
+    Integer getColumnsCount();
     //void filter(Predicate<IDataRow> predicate);
 }

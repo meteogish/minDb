@@ -1,9 +1,8 @@
 package minDb.DataProvider.Logic;
 
-import javax.xml.crypto.Data;
-
 import minDb.Core.Components.IInsertQueryExecutor;
-import minDb.Core.Data.IRawTableWriter;
+import minDb.Core.Components.Data.IRawTableWriter;
+import minDb.Core.Components.Data.ITableFileProvider;
 import minDb.Core.Exceptions.ValidationException;
 import minDb.Core.MetaInfo.DatabaseMetaInfo;
 import minDb.Core.MetaInfo.TableMetaInfo;
@@ -14,9 +13,11 @@ import minDb.Core.QueryModels.Queries.InsertQuery;
  */
 public class InsertExecutor implements IInsertQueryExecutor {
     private IRawTableWriter _writer;
+	private ITableFileProvider _tableFileProvider;
 
-	public InsertExecutor(IRawTableWriter writer) {
+	public InsertExecutor(IRawTableWriter writer, ITableFileProvider tableFileProvider) {
         _writer = writer;
+        _tableFileProvider = tableFileProvider;
     }
 
 	@Override
@@ -34,6 +35,6 @@ public class InsertExecutor implements IInsertQueryExecutor {
 
         //TODO Columns validation
 
-        _writer.writeTo(tableInfo, dbFolder, insert.get_insertValues());
+        _writer.writeTo(tableInfo, _tableFileProvider.getTableFile(tableInfo.get_tableName(), dbFolder, true), insert.get_insertValues());
     }    
 }

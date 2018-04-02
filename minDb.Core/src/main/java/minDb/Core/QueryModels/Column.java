@@ -23,6 +23,18 @@ public class Column {
 	public Table get_table() {
 		return _table;
 	}
+
+	public String getNameWithAlias()
+	{
+		if(StringExtenstions.IsNullOrEmpty(_table.get_alias()))
+		{
+			return get_name();
+		}
+		else
+		{
+			return get_table().get_alias() + "." + get_name();
+		}
+	}
     
     public Column(String name) throws ValidationException {
 		super();

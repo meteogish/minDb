@@ -1,36 +1,34 @@
-package minDb.DataProvider.Data;
+package minDb.DataProvider.Data.Models;
 
-import java.sql.Array;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-
-import minDb.Core.Data.IDataRow;
-import minDb.Core.Data.IDataTable;
+import minDb.Core.Components.Data.IDataRow;
+import minDb.Core.Components.Data.IDataTable;
 import minDb.Core.Exceptions.ValidationException;
 import minDb.Core.QueryModels.SelectColumn;
+import minDb.Core.QueryModels.Conditions.JoinColumnCondition;
 
 /**
  * DataTable
  */
 public class DataTable implements IDataTable {
 
-	private List<IDataRow> _rows;
+	private List<List<Object>> _rows;
 	private List<String> _header;
 
 	private List<Integer> _selectedColumns;
 
-	public DataTable(List<String> header, List<IDataRow> rows) {
+	public DataTable(List<String> header, List<List<Object>> rows) {
         _header = header;
 		_rows = rows;		
     }
 
 	@Override
 	public IDataRow get(int i) {
-		return _rows.get(i);
+		return new DataRow(_rows.get(i));
 	}
 
 	@Override
@@ -41,8 +39,8 @@ public class DataTable implements IDataTable {
 	/**
 	 * @return the _rows
 	 */
-	public List<IDataRow> get_rows() {
-		return _rows;
+	public List<DataRow> get_rows() {
+		return null;
 	}
 
 	@Override
@@ -61,15 +59,26 @@ public class DataTable implements IDataTable {
 		}
 	}
 
+	public Integer getIndex(String columnName)
+	{
+		for (int i = 0; i < _header.size(); i++) {
+			if(_header.get(i).equalsIgnoreCase(columnName))
+			{
+				return i;
+			}
+		}
+		return null;
+	}
+
 	@Override
 	public void print() {
 		String header = _selectedColumns.stream().map(i -> _header.get(i)).reduce("|", String::concat);
 		System.out.println(header);
-		for (IDataRow row : _rows) {
+		for (List<Object> row : _rows) {
 			StringBuilder builder = new StringBuilder();
 			for(int i : _selectedColumns)
 			{
-				Object o = row.getObject(i);
+				Object o = row.get(i);
 				if(o == null)
 				{
 					builder.append(" | null");
@@ -82,4 +91,20 @@ public class DataTable implements IDataTable {
 			System.out.println(builder);	
 		}
 	}
+
+	public void join(DataTable joinData, List<JoinColumnCondition> conditions) {
+		for(int i = 0; i < _rows.size(); ++i)
+		{
+			for (int j = 0; j < joinData._rows.size(); j++) {
+				// _rows.get(i).join(joinData._rows.get(j));				
+			}
+		}
+	}
+
+	@Override
+	public Integer getColumnsCount() {
+		return _selectedColumns.size();
+	}
+
+
 }

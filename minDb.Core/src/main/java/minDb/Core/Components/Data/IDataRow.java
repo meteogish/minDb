@@ -1,4 +1,4 @@
-package minDb.Core.Data;
+package minDb.Core.Components.Data;
 
 /**
  * IDataRow
