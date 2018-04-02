@@ -82,7 +82,7 @@ public class SqlQueryParserTests {
     public void Joins_PositiveTest() throws ValidationException {
         String strQuery = "select * from Employees e " 
                 + "join EmployeeTerritories et on et.EmployeeID = e.EmployeeID "
-                + "join Territories t on t.TerritoryID = e.TerritoryID";
+                + "join Territories t on e.TerritoryID = t.TerritoryID";
 
         Table e = new Table("Employees", "e");
         Table et = new Table("EmployeeTerritories", "et");

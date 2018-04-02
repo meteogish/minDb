@@ -8,6 +8,7 @@ import java.util.stream.IntStream;
 import minDb.Core.Components.Data.IDataRow;
 import minDb.Core.Components.Data.IDataTable;
 import minDb.Core.Exceptions.ValidationException;
+import minDb.Core.QueryModels.Column;
 import minDb.Core.QueryModels.SelectColumn;
 import minDb.Core.QueryModels.Conditions.JoinColumnCondition;
 
@@ -17,11 +18,11 @@ import minDb.Core.QueryModels.Conditions.JoinColumnCondition;
 public class DataTable implements IDataTable {
 
 	private List<List<Object>> _rows;
-	private List<String> _header;
+	private List<Column> _header;
 
 	private List<Integer> _selectedColumns;
 
-	public DataTable(List<String> header, List<List<Object>> rows) {
+	public DataTable(List<Column> header, List<List<Object>> rows) {
         _header = header;
 		_rows = rows;		
     }
@@ -33,7 +34,7 @@ public class DataTable implements IDataTable {
 
 	@Override
 	public List<String> getHeader() {
-		return _header;
+		return null;
 	}
 
 	/**
@@ -51,7 +52,7 @@ public class DataTable implements IDataTable {
 			.filter(i ->
 			{
 				int l = i;
-				return selectColumns.stream().filter(p -> p.get_name().equalsIgnoreCase(_header.get(l))).findFirst().isPresent();
+				return true;//selectColumns.stream().filter(p -> p.get_name().equalsIgnoreCase(_header.get(l))).findFirst().isPresent();
 			})
 			.toArray();
 			
@@ -62,7 +63,7 @@ public class DataTable implements IDataTable {
 	public Integer getIndex(String columnName)
 	{
 		for (int i = 0; i < _header.size(); i++) {
-			if(_header.get(i).equalsIgnoreCase(columnName))
+			if(_header.get(i).get_name().equalsIgnoreCase(columnName))
 			{
 				return i;
 			}
@@ -72,7 +73,7 @@ public class DataTable implements IDataTable {
 
 	@Override
 	public void print() {
-		String header = _selectedColumns.stream().map(i -> _header.get(i)).reduce("|", String::concat);
+		String header = _selectedColumns.stream().map(i -> _header.get(i).get_name()).reduce("|", String::concat);
 		System.out.println(header);
 		for (List<Object> row : _rows) {
 			StringBuilder builder = new StringBuilder();

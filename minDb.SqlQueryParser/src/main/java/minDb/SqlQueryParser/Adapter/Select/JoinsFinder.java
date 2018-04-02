@@ -29,10 +29,15 @@ public class JoinsFinder implements IJoinAdapter {
             throws ValidationException {
         List<Join> _joins = new ArrayList<Join>();
         if (parsedJoins != null && !parsedJoins.isEmpty()) {
+            if(StringExtenstions.IsNullOrEmpty(fromTable.get_alias()))
+            {
+                throw new ValidationException("Joins are existing but table in FROM clause is without alias.");
+            }
+
             for (net.sf.jsqlparser.statement.select.Join parsedJoin : parsedJoins) {
                 Table joinTable = _fromTableFinder.getTableFromItem(parsedJoin.getRightItem());
                 Join join = new Join(joinTable);
-                join.on(parseJoinExpression(parsedJoin.getOnExpression(), join, fromTable));
+                parseJoinExpression(parsedJoin.getOnExpression(), join, fromTable);
                 _joins.add(join);
             }
         }
@@ -40,12 +45,12 @@ public class JoinsFinder implements IJoinAdapter {
         return _joins;
     }
 
-    private JoinColumnCondition parseJoinExpression(Expression expr, Join join, Table fromTable)
+    private void parseJoinExpression(Expression expr, Join join, Table fromTable)
             throws ValidationException {
         if (expr instanceof AndExpression) {
             AndExpression and = (AndExpression) expr;
-            join.on(parseJoinExpression(and.getLeftExpression(), join, fromTable));
-            join.on(parseJoinExpression(and.getRightExpression(), join, fromTable));
+            parseJoinExpression(and.getLeftExpression(), join, fromTable);
+            parseJoinExpression(and.getRightExpression(), join, fromTable);
         } else if (expr instanceof EqualsTo) {
             EqualsTo onExpresison = (EqualsTo) expr;
 
@@ -60,14 +65,20 @@ public class JoinsFinder implements IJoinAdapter {
                 minDb.Core.QueryModels.Column rightColumn = getColumnFromColumnExpression(
                         (Column) onExpresison.getRightExpression(), join, fromTable);
 
-                return new JoinColumnCondition(leftColumn, rightColumn, Compare.EQUALS);
+                if(leftColumn.get_table().get_alias().equals(join.get_table().get_alias()))
+                {
+                    join.on(new JoinColumnCondition(leftColumn, rightColumn, Compare.EQUALS));
+                }
+                else
+                {
+                    join.on(new JoinColumnCondition(rightColumn, leftColumn, Compare.EQUALS));
+                }         
             } else {
                 throw new ValidationException("Not supported yet");
             }
         } else {
             throw new ValidationException("Not supported yet");
         }
-        return null;
     }
 
     private minDb.Core.QueryModels.Column getColumnFromColumnExpression(Column column, Join join, Table fromTable)

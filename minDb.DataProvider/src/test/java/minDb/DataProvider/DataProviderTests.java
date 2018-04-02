@@ -82,5 +82,28 @@ public class DataProviderTests {
             assertEquals(expectedValues.get(i), actualValues.get(0).get(i));
         }
     }
+
+
+    @Test
+    public void WithSelectTest() throws ValidationException
+    {
+        List<Object> expectedValues = new ArrayList<Object>();
+        expectedValues.add("FULLL_123STIRNG");
+        expectedValues.add(23);
+        expectedValues.add(23.082001);
+        expectedValues.add("STRING");
+
+        _writer.writeTo(_tableInfo, _tableFile, expectedValues);
+
+        List<Integer> select = new ArrayList<Integer>(2);
+        select.add(1);
+        select.add(3);
+
+        List<List<Object>> actualValues = _reader.readFrom(_tableInfo, _tableFile, select);
+
+        for (int i = 0; i < select.size(); i++) {
+            assertEquals(expectedValues.get(select.get(i)), actualValues.get(0).get(i));
+        }
+    }
     
 }

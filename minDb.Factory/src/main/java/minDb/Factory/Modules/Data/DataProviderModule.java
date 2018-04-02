@@ -9,8 +9,6 @@ import minDb.Core.Components.Data.IRawTableWriter;
 import minDb.Core.Components.Data.ITableFileProvider;
 import minDb.Core.Components.Data.ITypeSizeProvider;
 import minDb.DataProvider.Data.IO.TableFileProvider;
-import minDb.DataProvider.Data.IO.TableReader;
-import minDb.DataProvider.Data.IO.TableWriter;
 import minDb.DataProvider.Data.TypeSizeProvider;
 
 /**
@@ -23,9 +21,8 @@ public class DataProviderModule extends AbstractModule {
 		bind(ITypeSizeProvider.class).to(TypeSizeProvider.class);
 		bind(ITableFileProvider.class).to(TableFileProvider.class);
 
-        bind(IRawTableWriter.class).to(TableWriter.class);
-		bind(IRawTableReader.class).to(TableReader.class);
-
+        bind(IRawTableWriter.class).toProvider(TableWriterProvider.class);
+		bind(IRawTableReader.class).toProvider(TableReaderProvider.class);
 		
 		bind(ISelectQueryExecutor.class).toProvider(SelectExecutorProvider.class);
 		bind(IInsertQueryExecutor.class).toProvider(InsertExecutorProvider.class);
