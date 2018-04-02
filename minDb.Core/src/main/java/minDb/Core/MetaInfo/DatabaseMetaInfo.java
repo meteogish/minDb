@@ -14,6 +14,11 @@ public class DatabaseMetaInfo {
 	public List<TableMetaInfo> get_tables() {
 		return _tables;
     }
+
+    public void createtable(TableMetaInfo table)
+    {
+        _tables.add(table);
+    }
     
     public DatabaseMetaInfo(List<TableMetaInfo> tables) {
         super();

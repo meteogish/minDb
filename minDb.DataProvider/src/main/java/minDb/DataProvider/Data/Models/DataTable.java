@@ -1,5 +1,6 @@
 package minDb.DataProvider.Data.Models;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -11,6 +12,8 @@ import minDb.Core.Exceptions.ValidationException;
 import minDb.Core.QueryModels.Column;
 import minDb.Core.QueryModels.SelectColumn;
 import minDb.Core.QueryModels.Conditions.JoinColumnCondition;
+import minDb.Core.QueryModels.Conditions.ColumnCondition.Compare;
+import minDb.DataProvider.HelpDto.JoinRawDataCondition;
 
 /**
  * DataTable
@@ -20,64 +23,17 @@ public class DataTable implements IDataTable {
 	private List<List<Object>> _rows;
 	private List<Column> _header;
 
-	private List<Integer> _selectedColumns;
-
 	public DataTable(List<Column> header, List<List<Object>> rows) {
-        _header = header;
-		_rows = rows;		
-    }
-
-	@Override
-	public IDataRow get(int i) {
-		return new DataRow(_rows.get(i));
+		_header = header;
+		_rows = rows;
 	}
 
-	@Override
-	public List<String> getHeader() {
-		return null;
-	}
-
-	/**
-	 * @return the _rows
-	 */
-	public List<DataRow> get_rows() {
-		return null;
-	}
-
-	@Override
-	public void select(List<SelectColumn> selectColumns) throws ValidationException {
-		if (selectColumns != null && !selectColumns.isEmpty()) {
-					
-			int[] indexes =  IntStream.range(0, _header.size())
-			.filter(i ->
-			{
-				int l = i;
-				return true;//selectColumns.stream().filter(p -> p.get_name().equalsIgnoreCase(_header.get(l))).findFirst().isPresent();
-			})
-			.toArray();
-			
-			_selectedColumns = Arrays.stream(indexes).boxed().collect(Collectors.toList());
-		}
-	}
-
-	public Integer getIndex(String columnName)
-	{
-		for (int i = 0; i < _header.size(); i++) {
-			if(_header.get(i).get_name().equalsIgnoreCase(columnName))
-			{
-				return i;
-			}
-		}
-		return null;
-	}
-
-	@Override
 	public void print() {
-		String header = _selectedColumns.stream().map(i -> _header.get(i).get_name()).reduce("|", String::concat);
+		String header = _header.stream().map(i -> i.get_name()).reduce("|", String::concat);
 		System.out.println(header);
 		for (List<Object> row : _rows) {
 			StringBuilder builder = new StringBuilder();
-			for(int i : _selectedColumns)
+			for(int i = 0; i < _header.size(); ++i)
 			{
 				Object o = row.get(i);
 				if(o == null)
@@ -93,19 +49,48 @@ public class DataTable implements IDataTable {
 		}
 	}
 
-	public void join(DataTable joinData, List<JoinColumnCondition> conditions) {
-		for(int i = 0; i < _rows.size(); ++i)
-		{
+	public void join(DataTable joinData, List<JoinColumnCondition> conditions) throws ValidationException {
+		List<JoinRawDataCondition> indexes = new ArrayList<JoinRawDataCondition>(conditions.size());
+
+		for (JoinColumnCondition condition : conditions) {
+			Integer joinTableDataIndex = joinData.getIndexOfColumn(condition.get_leftColumn());
+			Integer dataIndex = this.getIndexOfColumn(condition.get_rightColumn());
+			indexes.add(new JoinRawDataCondition(dataIndex, joinTableDataIndex, condition.get_compare()));
+		}
+		List<List<Object>> newData = new ArrayList<List<Object>>();
+
+		for (int i = 0; i < _rows.size(); ++i) {
 			for (int j = 0; j < joinData._rows.size(); j++) {
-				// _rows.get(i).join(joinData._rows.get(j));				
+				if (canJoin(_rows.get(i), joinData._rows.get(j), indexes)) {
+					List<Object> newRow = new ArrayList<Object>(_rows.get(i));
+					newRow.addAll(joinData._rows.get(j));
+					newData.add(newRow);
+				}
 			}
 		}
+		_rows = newData;
+		_header.addAll(joinData._header);
 	}
 
-	@Override
-	public Integer getColumnsCount() {
-		return _selectedColumns.size();
+	public IDataRow get(Integer i) {
+		return new DataRow(_rows.get(i));
 	}
 
+	public Integer getIndexOfColumn(Column column) {
+		return _header.indexOf(column);
+	}
+
+	private boolean canJoin(List<Object> dataTableRow, List<Object> joinTableRow, List<JoinRawDataCondition> conditions) {
+		for (JoinRawDataCondition condition : conditions) {
+			Object dataValue = dataTableRow.get(condition.getLeftColumnIndex());
+			Object joinValue = joinTableRow.get(condition.get_joinTableColumnIndex());
+			if (condition.get_compare() == Compare.EQUALS) {
+				if (!dataValue.equals(joinValue)) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
 
 }

@@ -38,5 +38,19 @@ public class Table {
         
         _name = name;
         _alias = alias;
-    } 
+    }
+
+    @Override
+	public boolean equals(Object other) {
+		if (other == null)
+			return false;
+		if (other == this)
+			return true;
+		if (!(other instanceof Table))
+			return false;
+
+		Table table = (Table) other;
+
+		return _name.equals(table._name) && _alias.equals(table._alias);
+	}
 }

@@ -9,10 +9,11 @@ import minDb.Core.QueryModels.SelectColumn;
  * IDataTable
  */
 public interface IDataTable {
-    IDataRow get(int i);
-    List<String> getHeader();
-    void select(List<SelectColumn> selectColumns) throws ValidationException;
     void print();
-    Integer getColumnsCount();
+    // IDataRow get(int i);
+    // List<String> getHeader();
+    // void select(List<SelectColumn> selectColumns) throws ValidationException;
+    // void print();
+    // Integer getColumnsCount();
     //void filter(Predicate<IDataRow> predicate);
 }

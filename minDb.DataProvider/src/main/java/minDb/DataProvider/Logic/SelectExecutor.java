@@ -44,7 +44,7 @@ public class SelectExecutor implements ISelectQueryExecutor {
         for (Join join : selectQuery.get_joins()) 
         {
             DataTable joinTable = readTable(join.get_table(), dbInfo, selectQuery, dbFolder);
-            data.join(joinData, join.get_conditions());
+            data.join(joinTable, join.get_conditions());
         }
         return data;
     }
