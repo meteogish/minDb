@@ -4,14 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.lang.model.util.ElementScanner6;
-
 import minDb.Core.Exceptions.ValidationException;
-import net.sf.jsqlparser.expression.DoubleValue;
+import minDb.SqlQueryParser.Adapter.Primitives.IPrimitivesAdapter;
 import net.sf.jsqlparser.expression.Expression;
-import net.sf.jsqlparser.expression.LongValue;
-import net.sf.jsqlparser.expression.NullValue;
-import net.sf.jsqlparser.expression.StringValue;
 import net.sf.jsqlparser.expression.operators.relational.ExpressionList;
 import net.sf.jsqlparser.expression.operators.relational.ItemsList;
 import net.sf.jsqlparser.expression.operators.relational.ItemsListVisitor;
@@ -25,6 +20,12 @@ import net.sf.jsqlparser.statement.select.SubSelect;
  */
 public class InsertQueryFinder implements IInsertQueryAdapter, ItemsListVisitor {
 	List<Object> _values;
+	private IPrimitivesAdapter _primitivesAdapter;
+
+
+	public InsertQueryFinder(IPrimitivesAdapter primitivesAdapter) {
+        _primitivesAdapter = primitivesAdapter;
+    }
 
 	public List<Object> getInsertValues(Insert insertStatement) throws ValidationException {
 		ItemsList items = insertStatement.getItemsList();
@@ -68,17 +69,7 @@ public class InsertQueryFinder implements IInsertQueryAdapter, ItemsListVisitor 
 				_values = null;
 			} else {
 				_values = expressions.stream().map(e -> {
-					if (e instanceof LongValue) {
-						return (Object) ((LongValue) e).getValue();
-					} else if (e instanceof DoubleValue) {
-						return (Object) ((DoubleValue) e).getValue();
-					} else if (e instanceof StringValue) {
-						return (Object) ((StringValue) e).getValue();
-					} else if (e instanceof NullValue) {
-						return null;
-					} else {
-						return null;
-					}
+					return _primitivesAdapter.parseValueFromExpression(e);
 				}).collect(Collectors.toList());
 			}
 		}

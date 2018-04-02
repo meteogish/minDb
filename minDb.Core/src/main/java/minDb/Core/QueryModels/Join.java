@@ -12,28 +12,17 @@ import minDb.Core.QueryModels.Conditions.ColumnCondition.Compare;
  */
 public class Join {
     private Table _table;
-    private List<JoinColumnCondition> _columns = new ArrayList<JoinColumnCondition>();
-
-    /**
-     * @return the _table
-     */
-    public Table get_table() {
-        return _table;
-    }
+    private List<JoinColumnCondition> _columns;
 
     public Join(Table table) {
         _table = table;
+        _columns = new ArrayList<JoinColumnCondition>();
     }
 
     public Join on(String leftColumn, Table leftTable, Compare compare, String rightColumn, Table rightTable) throws ValidationException {
         _columns.add(new JoinColumnCondition(leftTable, leftColumn, compare, rightTable, rightColumn));
         return this;
     }
-
-    // public <T> Join on(String leftColumn, Table leftTable, Compare compare, T value) throws ValidationException {
-    //     _columns.add(new ValueColumnCondition<T>(leftTable, leftColumn, compare, value));
-    //     return this;
-    // }
 
     public void on(JoinColumnCondition condition) throws ValidationException
     {
@@ -42,6 +31,13 @@ public class Join {
             throw new ValidationException("Condition parameter is null");
         }
         _columns.add(condition);
+    }
+
+    /**
+     * @return the _table
+     */
+    public Table get_table() {
+        return _table;
     }
 
 	/**

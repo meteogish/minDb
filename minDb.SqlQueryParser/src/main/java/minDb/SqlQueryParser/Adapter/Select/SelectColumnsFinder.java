@@ -4,13 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import minDb.Core.Exceptions.ValidationException;
-import minDb.Core.QueryModels.Aggregation;
 import minDb.Core.QueryModels.SelectColumn;
-import minDb.Extensions.EnumExtensions;
+import minDb.Core.QueryModels.Table;
+import minDb.SqlQueryParser.Adapter.Primitives.IPrimitivesAdapter;
 import net.sf.jsqlparser.expression.Alias;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.Function;
-import net.sf.jsqlparser.schema.Column;
 import net.sf.jsqlparser.statement.select.AllColumns;
 import net.sf.jsqlparser.statement.select.PlainSelect;
 import net.sf.jsqlparser.statement.select.SelectExpressionItem;
@@ -20,46 +19,41 @@ import net.sf.jsqlparser.statement.select.SelectItem;
  * SelectColumnsFinder
  */
 public class SelectColumnsFinder implements ISelectAdapter {
-    public List<SelectColumn> getSelectColumns(PlainSelect plainSelect) throws ValidationException {
+
+    private IPrimitivesAdapter _primitivesAdapter;
+
+	public SelectColumnsFinder(IPrimitivesAdapter primitivesAdapter) {
+        _primitivesAdapter = primitivesAdapter;
+    }
+
+    public List<SelectColumn> getSelectColumns(PlainSelect plainSelect, List<Table> tables) throws ValidationException {
         List<SelectColumn> select = new ArrayList<SelectColumn>();
         for (SelectItem item : plainSelect.getSelectItems()) {
-            if (AllColumns.class.isInstance(item)) {
+            if (item instanceof AllColumns) {
                 break;
             }
-            add(getColumn((SelectExpressionItem) item), select);
+            add(getColumn((SelectExpressionItem) item, tables), select);
         }
         return select;
     }
 
-    private SelectColumn getColumn(SelectExpressionItem selectExpressionItem) throws ValidationException {
+    private SelectColumn getColumn(SelectExpressionItem selectExpressionItem, List<Table> tables) throws ValidationException {
         Alias aliasExpression = selectExpressionItem.getAlias();
         String alias = aliasExpression != null ? aliasExpression.getName() : null;
         
         Expression columnExpression = selectExpressionItem.getExpression();
 
-        if(columnExpression instanceof Column)
+        if(columnExpression instanceof net.sf.jsqlparser.schema.Column)
         {
-           return new SelectColumn(((Column)columnExpression).getColumnName(), alias);        
+           return new SelectColumn(_primitivesAdapter.getColumn((net.sf.jsqlparser.schema.Column)columnExpression, tables), alias);        
         }
-        else if(Function.class.isInstance(columnExpression))
+        else if(columnExpression instanceof Function)
         {
-            Function functionExpression = (Function)columnExpression;
-            Aggregation aggregate = EnumExtensions.parse(Aggregation.class, functionExpression.getName());
-            String columnName = getAgregationColumnName((Function)columnExpression);
-            return new SelectColumn(columnName, alias, aggregate);
+            return _primitivesAdapter.getAgregationColumn((Function)columnExpression, tables);
         }
         else
         {
             throw new ValidationException("Unsupported column clause in select.");
-        }
-    }
-
-    private String getAgregationColumnName(Function function) throws ValidationException {
-        Expression columnExpression = function.getParameters().getExpressions().stream().findFirst().orElse(null);
-        if (Column.class.isInstance(columnExpression)) {
-            return ((Column) columnExpression).getColumnName();
-        } else {
-            throw new ValidationException("Agregation is not column columnExpression");
         }
     }
 

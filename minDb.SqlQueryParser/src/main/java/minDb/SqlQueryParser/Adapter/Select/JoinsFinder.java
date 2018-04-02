@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import minDb.Core.Exceptions.ValidationException;
-import minDb.Core.QueryModels.Conditions.ColumnCondition.Compare;
-import minDb.Extensions.StringExtenstions;
-import minDb.Core.QueryModels.Conditions.JoinColumnCondition;
 import minDb.Core.QueryModels.Join;
 import minDb.Core.QueryModels.Table;
-import minDb.SqlQueryParser.Adapter.From.IFromTableAdapter;
+import minDb.Core.QueryModels.Conditions.ColumnCondition.Compare;
+import minDb.Core.QueryModels.Conditions.JoinColumnCondition;
+import minDb.Extensions.StringExtenstions;
+import minDb.SqlQueryParser.Adapter.Primitives.IPrimitivesAdapter;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.operators.conditional.AndExpression;
 import net.sf.jsqlparser.expression.operators.relational.EqualsTo;
@@ -19,10 +19,11 @@ import net.sf.jsqlparser.schema.Column;
  * JoinsFinder
  */
 public class JoinsFinder implements IJoinAdapter {
-    private IFromTableAdapter _fromTableFinder;
 
-    public JoinsFinder(IFromTableAdapter fromTableAdapter) {
-        _fromTableFinder = fromTableAdapter;
+    private IPrimitivesAdapter _primitivesAdapter;
+
+	public JoinsFinder(IPrimitivesAdapter primitivesAdapter) {
+        _primitivesAdapter = primitivesAdapter;
     }
 
     public List<Join> getJoins(List<net.sf.jsqlparser.statement.select.Join> parsedJoins, Table fromTable)
@@ -35,7 +36,7 @@ public class JoinsFinder implements IJoinAdapter {
             }
 
             for (net.sf.jsqlparser.statement.select.Join parsedJoin : parsedJoins) {
-                Table joinTable = _fromTableFinder.getTableFromItem(parsedJoin.getRightItem());
+                Table joinTable = _primitivesAdapter.getFromTable(parsedJoin.getRightItem());
                 Join join = new Join(joinTable);
                 parseJoinExpression(parsedJoin.getOnExpression(), join, fromTable);
                 _joins.add(join);
@@ -47,6 +48,11 @@ public class JoinsFinder implements IJoinAdapter {
 
     private void parseJoinExpression(Expression expr, Join join, Table fromTable)
             throws ValidationException {
+        if(expr == null)
+        {
+            return;
+        }
+        
         if (expr instanceof AndExpression) {
             AndExpression and = (AndExpression) expr;
             parseJoinExpression(and.getLeftExpression(), join, fromTable);

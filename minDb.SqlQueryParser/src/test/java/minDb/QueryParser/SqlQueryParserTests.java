@@ -15,25 +15,23 @@ import minDb.Core.Exceptions.ValidationException;
 import minDb.Core.MetaInfo.ColumnMetaInfo;
 import minDb.Core.MetaInfo.ColumnType;
 import minDb.Core.MetaInfo.TableMetaInfo;
-import minDb.Core.QueryModels.Aggregation;
 import minDb.Core.QueryModels.Join;
 import minDb.Core.QueryModels.SelectColumn;
 import minDb.Core.QueryModels.Table;
 import minDb.Core.QueryModels.Conditions.ColumnCondition.Compare;
+import minDb.Core.QueryModels.Conditions.LogicalCondition;
+import minDb.Core.QueryModels.Conditions.ValueColumnCondition;
 import minDb.Core.QueryModels.Queries.InsertQuery;
 import minDb.Core.QueryModels.Queries.Query;
 import minDb.Core.QueryModels.Queries.SelectQuery;
 import minDb.SqlQueryParser.QueryParser;
 import minDb.SqlQueryParser.Adapter.Create.CreateQueryFinder;
-import minDb.SqlQueryParser.Adapter.From.FromTableFinder;
-import minDb.SqlQueryParser.Adapter.From.IFromTableAdapter;
 import minDb.SqlQueryParser.Adapter.Insert.InsertQueryFinder;
+import minDb.SqlQueryParser.Adapter.Primitives.IPrimitivesAdapter;
+import minDb.SqlQueryParser.Adapter.Primitives.SqlPrimitivesAdapter;
 import minDb.SqlQueryParser.Adapter.Select.JoinsFinder;
 import minDb.SqlQueryParser.Adapter.Select.SelectColumnsFinder;
 import minDb.SqlQueryParser.Adapter.Select.WhereFinder;
-import minDb.Core.QueryModels.Conditions.ICondition;
-import minDb.Core.QueryModels.Conditions.LogicalCondition;
-import minDb.Core.QueryModels.Conditions.ValueColumnCondition;
 
 /**
  * QueryBuilderTests
@@ -44,29 +42,33 @@ public class SqlQueryParserTests {
 
     @Before
     public void ctor() {
-        IFromTableAdapter from = new FromTableFinder();
+        IPrimitivesAdapter primitivesAdapter = new SqlPrimitivesAdapter();
         parser = new QueryParser(
             new CreateQueryFinder(),
-            from,
-            new InsertQueryFinder(),
-            new SelectColumnsFinder(),
-            new JoinsFinder(from),
-            new WhereFinder());
+            primitivesAdapter,
+            new InsertQueryFinder(primitivesAdapter),
+            new SelectColumnsFinder(primitivesAdapter),
+            new JoinsFinder(primitivesAdapter),
+            new WhereFinder(primitivesAdapter));
     }
 
     @Test
-    public void SelectColumns_PositiveTest() throws ValidationException {
-        String strQuery = "select Id as i, Another, count(ROI) as roi from Customers c";
+    public void SelectColumnsTest() throws ValidationException {
+        String strQuery = "select Id as i, c.Another, t.TerLoc as Location from Customers c join Territories t";
+
+        Table customersTable = new Table("Customers", "c");
+        Table territoriesTable = new Table("Territories", "t");
+
 
         List<SelectColumn> expectedSelectColumns = new ArrayList<SelectColumn>(3);
-        expectedSelectColumns.add(new SelectColumn("Id", "i", null));
-        expectedSelectColumns.add(new SelectColumn("Another", null, null));
-        expectedSelectColumns.add(new SelectColumn("ROI", "roi", Aggregation.Count));
+        expectedSelectColumns.add(new SelectColumn("Id", customersTable, "i"));
+        expectedSelectColumns.add(new SelectColumn("Another", customersTable, null));
+        expectedSelectColumns.add(new SelectColumn("TerLoc", territoriesTable, "Location"));
 
         SelectQuery actualQuery = parser.parse(strQuery).get_select();
 
-        assertEquals("Customers", actualQuery.get_table().get_name());
-        assertEquals("c", actualQuery.get_table().get_alias());
+        assertEquals(customersTable.get_name(), actualQuery.get_table().get_name());
+        assertEquals(customersTable.get_alias(), actualQuery.get_table().get_alias());
 
         List<SelectColumn> actualSelectColumns = actualQuery.get_select();
         assertEquals(3, actualSelectColumns.size());
@@ -74,12 +76,13 @@ public class SqlQueryParserTests {
         for (int i = 0; i < actualSelectColumns.size(); ++i) {
             assertEquals(expectedSelectColumns.get(i).get_name(), actualSelectColumns.get(i).get_name());
             assertEquals(expectedSelectColumns.get(i).get_alias(), actualSelectColumns.get(i).get_alias());
-            assertEquals(expectedSelectColumns.get(i).get_aggregate(), actualSelectColumns.get(i).get_aggregate());
+            assertEquals(expectedSelectColumns.get(i).get_table().get_name(), actualSelectColumns.get(i).get_table().get_name());
+            assertEquals(expectedSelectColumns.get(i).get_table().get_alias(), actualSelectColumns.get(i).get_table().get_alias());            
         }
     }
 
     @Test
-    public void Joins_PositiveTest() throws ValidationException {
+    public void JoinsTest() throws ValidationException {
         String strQuery = "select * from Employees e " 
                 + "join EmployeeTerritories et on et.EmployeeID = e.EmployeeID "
                 + "join Territories t on e.TerritoryID = t.TerritoryID";
@@ -122,7 +125,7 @@ public class SqlQueryParserTests {
     }
 
     @Test
-    public void CreateTable_Test() throws ValidationException {
+    public void CreateTableTest() throws ValidationException {
         String createQuery = "create table Customers(Id INT, Name varchar(10))";
         // String createQuery = "create database Test";
 

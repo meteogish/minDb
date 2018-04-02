@@ -6,8 +6,8 @@ import com.google.inject.Provider;
 import minDb.Core.Components.IQueryParser;
 import minDb.SqlQueryParser.QueryParser;
 import minDb.SqlQueryParser.Adapter.Create.ICreateQueryAdapter;
-import minDb.SqlQueryParser.Adapter.From.IFromTableAdapter;
 import minDb.SqlQueryParser.Adapter.Insert.IInsertQueryAdapter;
+import minDb.SqlQueryParser.Adapter.Primitives.IPrimitivesAdapter;
 import minDb.SqlQueryParser.Adapter.Select.IJoinAdapter;
 import minDb.SqlQueryParser.Adapter.Select.ISelectAdapter;
 import minDb.SqlQueryParser.Adapter.Select.IWhereConditionAdapter;
@@ -17,7 +17,7 @@ import minDb.SqlQueryParser.Adapter.Select.IWhereConditionAdapter;
  */
 public class QueryParserProvider implements Provider<IQueryParser>{
     private ICreateQueryAdapter _createColumnsFinder;
-    private IFromTableAdapter _fromtableFinder;
+    private IPrimitivesAdapter _primitivesAdapter;
     private IInsertQueryAdapter _insertValuesFinder;
     private ISelectAdapter _selectColumnsFinder;
     private IJoinAdapter _joinsFinder;
@@ -26,13 +26,13 @@ public class QueryParserProvider implements Provider<IQueryParser>{
     @Inject
     public QueryParserProvider(
         ICreateQueryAdapter createFinder,
-        IFromTableAdapter fromtableFinder,
+        IPrimitivesAdapter primitivesAdapter,
         IInsertQueryAdapter insertValuesFinder,
         ISelectAdapter selectColumnsFinder,
         IJoinAdapter joinsFinder,
         IWhereConditionAdapter whereFinder) {
         _createColumnsFinder = createFinder;
-        _fromtableFinder = fromtableFinder;
+        _primitivesAdapter = primitivesAdapter;
         _insertValuesFinder = insertValuesFinder;
         _selectColumnsFinder = selectColumnsFinder;
         _joinsFinder = joinsFinder;
@@ -40,6 +40,6 @@ public class QueryParserProvider implements Provider<IQueryParser>{
     }
 
 	public IQueryParser get() {
-		return new QueryParser(_createColumnsFinder, _fromtableFinder, _insertValuesFinder, _selectColumnsFinder, _joinsFinder, _whereFinder);
+		return new QueryParser(_createColumnsFinder, _primitivesAdapter, _insertValuesFinder, _selectColumnsFinder, _joinsFinder, _whereFinder);
     }
 }

@@ -40,9 +40,13 @@ public class SelectExecutor implements ISelectQueryExecutor {
     public IDataTable execute(SelectQuery selectQuery, DatabaseMetaInfo dbInfo, String dbFolder)
             throws ValidationException {
         
-        DataTable from = readTable(selectQuery.get_table(), dbInfo, selectQuery, dbFolder);
-
-        return from;
+        DataTable data = readTable(selectQuery.get_table(), dbInfo, selectQuery, dbFolder);
+        for (Join join : selectQuery.get_joins()) 
+        {
+            DataTable joinTable = readTable(join.get_table(), dbInfo, selectQuery, dbFolder);
+            data.join(joinData, join.get_conditions());
+        }
+        return data;
     }
 
     private DataTable readTable(Table table, DatabaseMetaInfo dbInfo, SelectQuery selectQuery, String dbFolder) throws ValidationException
@@ -123,7 +127,7 @@ public class SelectExecutor implements ISelectQueryExecutor {
                 }
             }
         }
-        return null;
+        return columns;
     }
 
 }

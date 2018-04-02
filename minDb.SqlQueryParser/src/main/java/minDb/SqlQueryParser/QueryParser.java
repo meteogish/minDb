@@ -2,7 +2,6 @@ package minDb.SqlQueryParser;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import minDb.Core.Components.IQueryParser;
 import minDb.Core.Exceptions.ValidationException;
@@ -14,13 +13,12 @@ import minDb.Core.QueryModels.Table;
 import minDb.Core.QueryModels.Conditions.ICondition;
 import minDb.Core.QueryModels.Queries.Query;
 import minDb.SqlQueryParser.Adapter.Create.ICreateQueryAdapter;
-import minDb.SqlQueryParser.Adapter.From.IFromTableAdapter;
 import minDb.SqlQueryParser.Adapter.Insert.IInsertQueryAdapter;
+import minDb.SqlQueryParser.Adapter.Primitives.IPrimitivesAdapter;
 import minDb.SqlQueryParser.Adapter.Select.IJoinAdapter;
 import minDb.SqlQueryParser.Adapter.Select.ISelectAdapter;
 import minDb.SqlQueryParser.Adapter.Select.IWhereConditionAdapter;
 import net.sf.jsqlparser.JSQLParserException;
-import net.sf.jsqlparser.expression.operators.conditional.AndExpression;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
 import net.sf.jsqlparser.statement.Statement;
 import net.sf.jsqlparser.statement.create.table.CreateTable;
@@ -33,7 +31,7 @@ import net.sf.jsqlparser.statement.select.SelectBody;
  */
 public class QueryParser implements IQueryParser {
     private ICreateQueryAdapter _createColumnsFinder;
-    private IFromTableAdapter _fromtableFinder;
+    private IPrimitivesAdapter _primitivesAdapter;
     private IInsertQueryAdapter _insertAdapter;
     private ISelectAdapter _selectColumnsFinder;
     private IJoinAdapter _joinsFinder;
@@ -41,13 +39,13 @@ public class QueryParser implements IQueryParser {
 
     public QueryParser(
         ICreateQueryAdapter createFinder,
-        IFromTableAdapter fromtableFinder,
+        IPrimitivesAdapter primitivesAdapter,
         IInsertQueryAdapter insertValuesFinder,
         ISelectAdapter selectColumnsFinder,
         IJoinAdapter joinsFinder,
         IWhereConditionAdapter whereFinder) {
         _createColumnsFinder = createFinder;
-        _fromtableFinder = fromtableFinder;
+        _primitivesAdapter = primitivesAdapter;
         _insertAdapter = insertValuesFinder;
         _selectColumnsFinder = selectColumnsFinder;
         _joinsFinder = joinsFinder;
@@ -79,13 +77,13 @@ public class QueryParser implements IQueryParser {
 
     private Query buildInsertQuery(Insert statement) throws ValidationException {
         return Query.buildInsertQuery(
-            _fromtableFinder.getTableFromSqlTable(statement.getTable()),
+            _primitivesAdapter.getTableFromSqlTable(statement.getTable()),
             _insertAdapter.getInsertColumns(statement),
             _insertAdapter.getInsertValues(statement));
     }
 
     private Query buildCreateTableQuery(CreateTable query) throws ValidationException {
-        Table table = _fromtableFinder.getTableFromSqlTable(query.getTable());
+        Table table = _primitivesAdapter.getTableFromSqlTable(query.getTable());
 
         List<ColumnMetaInfo> columns = _createColumnsFinder.getCreateTableColumns(query);
 
@@ -94,14 +92,14 @@ public class QueryParser implements IQueryParser {
     }
 
     private Query buildSelectQuery(PlainSelect plainSelect) throws ValidationException {
-        Table from = _fromtableFinder.getTableFromItem(plainSelect.getFromItem());
-        List<SelectColumn> select = _selectColumnsFinder.getSelectColumns(plainSelect);
+        Table from = _primitivesAdapter.getFromTable(plainSelect.getFromItem());
         List<Join> join = _joinsFinder.getJoins(plainSelect.getJoins(), from);
-
+        
         List<Table> tables = new ArrayList<Table>(join.size() + 1);
         tables.add(from);
         join.forEach(j -> tables.add(j.get_table()));
-
+        
+        List<SelectColumn> select = _selectColumnsFinder.getSelectColumns(plainSelect, tables);
         ICondition where = _whereFinder.getWhereCondition(plainSelect, tables);
         return Query.buildSelectQuery(select, from, join, where);
     }
