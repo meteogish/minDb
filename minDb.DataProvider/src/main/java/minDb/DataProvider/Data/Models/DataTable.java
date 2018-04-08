@@ -1,7 +1,6 @@
 package minDb.DataProvider.Data.Models;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -11,8 +10,9 @@ import minDb.Core.Components.Data.IDataTable;
 import minDb.Core.Exceptions.ValidationException;
 import minDb.Core.QueryModels.Column;
 import minDb.Core.QueryModels.SelectColumn;
-import minDb.Core.QueryModels.Conditions.JoinColumnCondition;
 import minDb.Core.QueryModels.Conditions.ColumnCondition.Compare;
+import minDb.Core.QueryModels.Conditions.ICondition;
+import minDb.Core.QueryModels.Conditions.JoinColumnCondition;
 import minDb.DataProvider.HelpDto.JoinRawDataCondition;
 
 /**
@@ -22,6 +22,7 @@ public class DataTable implements IDataTable {
 
 	private List<List<Object>> _rows;
 	private List<Column> _header;
+	private List<Integer> _select;
 
 	public DataTable(List<Column> header, List<List<Object>> rows) {
 		_header = header;
@@ -29,23 +30,23 @@ public class DataTable implements IDataTable {
 	}
 
 	public void print() {
-		String header = _header.stream().map(i -> i.get_name()).reduce("|", String::concat);
+		StringBuilder header = new StringBuilder("| ");
+		for (Integer columnIndex : _select) {
+			header.append(_header.get(columnIndex).getNameWithAlias() + " | ");
+		}
+
 		System.out.println(header);
 		for (List<Object> row : _rows) {
-			StringBuilder builder = new StringBuilder();
-			for(int i = 0; i < _header.size(); ++i)
-			{
+			StringBuilder builder = new StringBuilder("| ");
+			for (Integer i : _select) {
 				Object o = row.get(i);
-				if(o == null)
-				{
-					builder.append(" | null");
-				} 
-				else
-				{
-					builder.append(" | " + o.toString());
+				if (o == null) {
+					builder.append(" null |");
+				} else {
+					builder.append(" " + o.toString() + " |");
 				}
 			}
-			System.out.println(builder);	
+			System.out.println(builder);
 		}
 	}
 
@@ -80,7 +81,21 @@ public class DataTable implements IDataTable {
 		return _header.indexOf(column);
 	}
 
-	private boolean canJoin(List<Object> dataTableRow, List<Object> joinTableRow, List<JoinRawDataCondition> conditions) {
+	@Override
+	public void filter(ICondition condition) throws ValidationException {
+		if (condition == null) {
+			return;
+		}
+
+		for (int i = 0; i < _rows.size(); ++i) {
+			if (!condition.apply(new DataRow(_rows.get(i)), this::getIndexOfColumn)) {
+				_rows.remove(i);
+			}
+		}
+	}
+
+	private boolean canJoin(List<Object> dataTableRow, List<Object> joinTableRow,
+			List<JoinRawDataCondition> conditions) {
 		for (JoinRawDataCondition condition : conditions) {
 			Object dataValue = dataTableRow.get(condition.getLeftColumnIndex());
 			Object joinValue = joinTableRow.get(condition.get_joinTableColumnIndex());
@@ -91,6 +106,19 @@ public class DataTable implements IDataTable {
 			}
 		}
 		return true;
+	}
+
+	@Override
+	public void select(List<SelectColumn> selectColumns) throws ValidationException {
+		try {
+			if (selectColumns.isEmpty()) {
+				_select = IntStream.range(0, _header.size()).boxed().collect(Collectors.toList());
+			} else {
+				_select = selectColumns.stream().map(sc -> getIndexOfColumn(sc)).collect(Collectors.toList());
+			}
+		} catch (Exception ex) {
+			throw new ValidationException("Error during select phase: " + ex.getMessage());
+		}
 	}
 
 }

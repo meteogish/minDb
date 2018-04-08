@@ -89,7 +89,7 @@ public class WhereFinder implements IWhereConditionAdapter {
             }
 
             if (isNullExpression.getLeftExpression() instanceof net.sf.jsqlparser.schema.Column) {
-                return new ValueColumnCondition<Object>(
+                return new ValueColumnCondition(
                     _primitivesAdapter.getColumn((net.sf.jsqlparser.schema.Column) isNullExpression.getLeftExpression(), tablesUsed),
                         compare, null);
             } else {
@@ -117,12 +117,12 @@ public class WhereFinder implements IWhereConditionAdapter {
                 leftColumn = _primitivesAdapter.getColumn((net.sf.jsqlparser.schema.Column) left,
                         tablesUsed);
                 value = _primitivesAdapter.parseValueFromExpression(right);
-                return new ValueColumnCondition<Object>(leftColumn, compare, value);
+                return new ValueColumnCondition(leftColumn, compare, value);
             } else if (!leftIsColumn && rightIsColumn) {
                 leftColumn = _primitivesAdapter.getColumn((net.sf.jsqlparser.schema.Column) right,
                         tablesUsed);
                 value = _primitivesAdapter.parseValueFromExpression(left);
-                return new ValueColumnCondition<Object>(leftColumn, compare, value);
+                return new ValueColumnCondition(leftColumn, compare, value);
             }
             else
             {

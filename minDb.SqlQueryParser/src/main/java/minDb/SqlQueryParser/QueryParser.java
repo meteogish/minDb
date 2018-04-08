@@ -87,7 +87,6 @@ public class QueryParser implements IQueryParser {
 
         List<ColumnMetaInfo> columns = _createColumnsFinder.getCreateTableColumns(query);
 
-        System.out.println(query);
         return Query.buildCreateTableQuery(new TableMetaInfo(columns, table.get_name()));
     }
 

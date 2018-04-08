@@ -4,16 +4,13 @@ import java.util.List;
 
 import minDb.Core.Exceptions.ValidationException;
 import minDb.Core.QueryModels.SelectColumn;
+import minDb.Core.QueryModels.Conditions.ICondition;
 
 /**
  * IDataTable
  */
 public interface IDataTable {
     void print();
-    // IDataRow get(int i);
-    // List<String> getHeader();
-    // void select(List<SelectColumn> selectColumns) throws ValidationException;
-    // void print();
-    // Integer getColumnsCount();
-    //void filter(Predicate<IDataRow> predicate);
+    void select(List<SelectColumn> selectColumns) throws ValidationException;
+    void filter(ICondition condition)  throws ValidationException;
 }

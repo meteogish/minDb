@@ -9,9 +9,9 @@
     <version>1.0</version>
   </parent>
   <groupId>minDb</groupId>
-  <artifactId>minDb.Factory</artifactId>
+  <artifactId>minDb.Connection</artifactId>
   <version>1.0</version>
-  <name>minDb.Factory</name>
+  <name>minDb.Connection</name>
   <url>http://maven.apache.org</url>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -23,29 +23,10 @@
       <version>1.0</version>
     </dependency>
     <dependency>
-      <groupId>minDb</groupId>
-      <artifactId>minDb.MetaInfoRepository</artifactId>
-      <version>1.0</version>
-    </dependency>
-    <dependency>
-      <groupId>minDb</groupId>
-      <artifactId>minDb.SqlQueryParser</artifactId>
-      <version>1.0</version>
-    </dependency>
-    <dependency>
-      <groupId>minDb</groupId>
-      <artifactId>minDb.DataProvider</artifactId>
-      <version>1.0</version>
-    </dependency>
-    <dependency>
-      <groupId>minDb</groupId>
-      <artifactId>minDb.Connection</artifactId>
-      <version>1.0</version>
-    </dependency>
-    <dependency>
-      <groupId>com.google.inject</groupId>
-      <artifactId>guice</artifactId>
-      <version>4.0</version>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.12</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>

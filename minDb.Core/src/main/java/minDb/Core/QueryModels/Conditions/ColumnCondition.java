@@ -9,10 +9,7 @@ import minDb.Core.QueryModels.Table;
  */
 public abstract class ColumnCondition {
     public enum Compare {
-        EQUALS("="),
-        NOT_EQUALS("<>"),
-        GREATER(">"),
-        LESS("<");
+        EQUALS("="), NOT_EQUALS("<>"), GREATER(">"), LESS("<");
 
         private final String _type;
 
@@ -26,8 +23,8 @@ public abstract class ColumnCondition {
         }
     }
 
-    private Column _leftColumn;
-    private Compare _compare;
+    protected Column _leftColumn;
+    protected Compare _compare;
 
     /**
      * @return the _compare
@@ -43,23 +40,62 @@ public abstract class ColumnCondition {
         return _leftColumn;
     }
 
-	public ColumnCondition(Table table, String column, Compare compare) throws ValidationException {
-        if(compare == null)
-        {
+    public ColumnCondition(Table table, String column, Compare compare) throws ValidationException {
+        if (compare == null) {
             throw new ValidationException("Compare parameter is null.");
         }
 
         _leftColumn = new Column(table, column);
         _compare = compare;
     }
-    
+
     public ColumnCondition(Column leftColumn, Compare compare) throws ValidationException {
-        if(leftColumn == null)
-        {
+        if (leftColumn == null) {
             throw new ValidationException("Column parameter is null.");
         }
 
         _leftColumn = leftColumn;
         _compare = compare;
-	}
+    }
+
+    protected Boolean compareValues(Object left, Object right) throws ValidationException {
+        boolean leftIsNull = left == null;
+        boolean rightIsNull = right == null;
+
+        if (_compare == Compare.EQUALS) {
+            if (leftIsNull) {
+                if (rightIsNull) {
+                    return true;
+                }
+                return false;
+            } else {
+                return left.equals(right);
+            }
+        } else if (_compare == Compare.NOT_EQUALS) {
+            if (leftIsNull) {
+                if (rightIsNull) {
+                    return false;
+                }
+                return true;
+            } else {
+                return left.equals(right) == false;
+            }
+        } else {
+            if (!leftIsNull && left instanceof Comparable) {
+                if (!rightIsNull && right instanceof Comparable) {
+                    if (_compare == Compare.LESS) {
+                        return ((Comparable<Object>) left).compareTo(((Number)right).doubleValue()) < 0;
+                    } else if (_compare == Compare.GREATER) {
+                        return ((Comparable<Object>) left).compareTo(((Number)right).doubleValue()) > 0;
+                    } else {
+                        throw new ValidationException("Compare not supported yet");
+                    }
+                } else {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        }
+    }
 }

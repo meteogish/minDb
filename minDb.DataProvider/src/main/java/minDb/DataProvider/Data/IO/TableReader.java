@@ -89,12 +89,12 @@ public class TableReader extends BaseIOProcessor implements IRawTableReader {
                 rows.add(values);
             }
         } catch (IOException e) {
-            System.out.println(e.getMessage());
+            throw new ValidationException("Error during read table. " + e.getMessage());
         } finally {
             try {
                 file.close();
             } catch (IOException e) {
-                System.out.println(e.getMessage());
+                throw new ValidationException("Error during read table. " + e.getMessage());
             }
         }
         return rows;

@@ -1,5 +1,6 @@
 package minDb.Core.MetaInfo;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,4 +26,8 @@ public class DatabaseMetaInfo {
         _tables = tables;
     }
     
+    public DatabaseMetaInfo()
+    {
+        _tables = new ArrayList<TableMetaInfo>();
+    }
 }

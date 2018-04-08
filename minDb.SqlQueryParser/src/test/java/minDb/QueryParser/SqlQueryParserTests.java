@@ -208,8 +208,8 @@ public class SqlQueryParserTests {
 		}
 
         LogicalCondition and = (LogicalCondition) q.get_where();
-        ValueColumnCondition<Object> left = (ValueColumnCondition<Object>) and.get_leftCondition();
-        ValueColumnCondition<Object> right = (ValueColumnCondition<Object>) and.get_righCondition();
+        ValueColumnCondition left = (ValueColumnCondition) and.get_leftCondition();
+        ValueColumnCondition right = (ValueColumnCondition) and.get_righCondition();
 
         assertEquals("Id", left.get_leftColumn().get_name());
         assertEquals("Info", left.get_leftColumn().get_table().get_name());
@@ -236,8 +236,8 @@ public class SqlQueryParserTests {
 		}
 
         LogicalCondition and = (LogicalCondition) q.get_where();
-        ValueColumnCondition<Object> left = (ValueColumnCondition<Object>) and.get_leftCondition();
-        ValueColumnCondition<Object> right = (ValueColumnCondition<Object>) and.get_righCondition();
+        ValueColumnCondition left = (ValueColumnCondition) and.get_leftCondition();
+        ValueColumnCondition right = (ValueColumnCondition) and.get_righCondition();
 
         assertEquals("Id", left.get_leftColumn().get_name());
         assertEquals("Account", left.get_leftColumn().get_table().get_name());

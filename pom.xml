@@ -12,6 +12,7 @@
     <module>minDb.MetaInfoRepository</module>
     <module>minDb.SqlQueryParser</module>
     <module>minDb.DataProvider</module>
+    <module>minDb.Connection</module>
     <module>minDb.Factory</module>
     <module>ConsoleEntry</module>
   </modules>

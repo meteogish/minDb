@@ -21,56 +21,58 @@ import minDb.Extensions.StringExtenstions;
  */
 public class JsonMetaInfoRepository implements IMetaInfoRepository {
 
-    public DatabaseMetaInfo getDatabaseMetaInfo(String path) throws ValidationException {
+    public DatabaseMetaInfo getDatabaseMetaInfo(File dbFile) throws ValidationException {
         try {
-            File file = new File(path);
-            if (!file.exists()) {
+            if(!dbFile.getName().endsWith(".db"))
+            {
+                throw new ValidationException("Invalid database info file extension.");
+            }
+
+            if (!dbFile.exists()) {
                 throw new ValidationException("The database file is not exists by path.");
             }
 
             Gson gson = new Gson();
 
-            FileReader fileReader = new FileReader(file);
+            FileReader fileReader = new FileReader(dbFile);
             JsonReader jsonReader = new JsonReader(fileReader);
             DatabaseMetaInfo metaInfo = gson.fromJson(jsonReader, DatabaseMetaInfo.class);
             jsonReader.close();
             fileReader.close();
             return metaInfo;
         } catch (Exception ex) {
-            System.out.println(ex.getMessage());
+            throw new ValidationException("An exception during db info read process. " + ex.getMessage());
         }
-        return null;
+    }
+
+    public DatabaseMetaInfo getDatabaseMetaInfo(String path) throws ValidationException {
+        File file = new File(path);
+        return getDatabaseMetaInfo(file);
     }
 
     public void saveDatabaseMetaInfo(DatabaseMetaInfo info, String folderPath, String name) throws ValidationException {
-        if(info == null)
-        {
+        if (info == null) {
             throw new ValidationException("DbInfo object is null for saving");
         }
 
-        if(StringExtenstions.IsNullOrEmpty(folderPath))
-        {
+        if (StringExtenstions.IsNullOrEmpty(folderPath)) {
             throw new ValidationException("FolderPath is null/empty/whitespace");
         }
 
-        if(StringExtenstions.IsNullOrEmpty(name))
-        {
+        if (StringExtenstions.IsNullOrEmpty(name)) {
             throw new ValidationException("DbName is null/empty/whitespace");
         }
-        
+
         if (!name.endsWith(".db")) {
             name = name + ".db";
         }
+        File file = new File(folderPath, name);
+        saveDatabaseMetaInfo(info, file);        
+    }
 
-        Path folder = Paths.get(folderPath, name);
-
-        System.out.println(folder.toUri());
-
+    public void saveDatabaseMetaInfo(DatabaseMetaInfo info, File file) throws ValidationException {
         try {
-            File file = new File(folder.toUri());
-
             if (!file.exists()) {
-
                 file.createNewFile();
             }
 
@@ -83,7 +85,8 @@ public class JsonMetaInfoRepository implements IMetaInfoRepository {
             jsonWriter.close();
             fileWriter.close();
         } catch (IOException ex) {
-            System.out.println(ex.getMessage());
+            throw new ValidationException("An exception during db info write. " + ex.getMessage());
         }
     }
+
 }

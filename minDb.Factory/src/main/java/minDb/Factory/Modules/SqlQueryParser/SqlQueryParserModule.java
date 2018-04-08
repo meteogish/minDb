@@ -6,7 +6,6 @@ import minDb.Core.Components.IQueryParser;
 import minDb.SqlQueryParser.Adapter.Create.CreateQueryFinder;
 import minDb.SqlQueryParser.Adapter.Create.ICreateQueryAdapter;
 import minDb.SqlQueryParser.Adapter.Insert.IInsertQueryAdapter;
-import minDb.SqlQueryParser.Adapter.Insert.InsertQueryFinder;
 import minDb.SqlQueryParser.Adapter.Primitives.IPrimitivesAdapter;
 import minDb.SqlQueryParser.Adapter.Primitives.SqlPrimitivesAdapter;
 import minDb.SqlQueryParser.Adapter.Select.IJoinAdapter;

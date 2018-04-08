@@ -75,12 +75,12 @@ public class TableWriter extends BaseIOProcessor implements IRawTableWriter {
             file.write(row);
             file.flush();
         } catch (IOException e) {
-            System.out.println(e.getMessage());
+            throw new ValidationException("Error during read table. " + e.getMessage());
         } finally {
             try {
                 file.close();
             } catch (IOException e) {
-                System.out.println(e.getMessage());
+                throw new ValidationException("Error during read table. " + e.getMessage());
             }
         }
     }
