@@ -73,6 +73,11 @@ public class DataTable implements IDataTable {
 		_header.addAll(joinData._header);
 	}
 
+	public List<List<Object>> getRows()
+	{
+		return _rows;
+	}
+
 	public IDataRow get(Integer i) {
 		return new DataRow(_rows.get(i));
 	}

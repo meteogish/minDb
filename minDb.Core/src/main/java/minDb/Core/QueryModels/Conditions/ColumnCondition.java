@@ -69,6 +69,10 @@ public abstract class ColumnCondition {
                 }
                 return false;
             } else {
+                if(left instanceof Number && right instanceof Number)
+                {
+                    return ((Number)left).doubleValue() == ((Number)right).doubleValue();
+                }
                 return left.equals(right);
             }
         } else if (_compare == Compare.NOT_EQUALS) {

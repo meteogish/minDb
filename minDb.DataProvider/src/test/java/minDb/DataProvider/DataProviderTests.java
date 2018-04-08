@@ -74,7 +74,9 @@ public class DataProviderTests {
         expectedValues.add(23.082001);
         expectedValues.add("STRING");
 
-        _writer.writeTo(_tableInfo, _tableFile, expectedValues);
+        List<List<Object>> rows = new ArrayList<List<Object>>();
+        rows.add(expectedValues);
+        _writer.writeTo(_tableInfo, _tableFile, rows, false);
 
         List<List<Object>> actualValues = _reader.readFrom(_tableInfo, _tableFile);
 
@@ -93,7 +95,9 @@ public class DataProviderTests {
         expectedValues.add(23.082001);
         expectedValues.add("STRING");
 
-        _writer.writeTo(_tableInfo, _tableFile, expectedValues);
+        List<List<Object>> rows = new ArrayList<List<Object>>();
+        rows.add(expectedValues);
+        _writer.writeTo(_tableInfo, _tableFile, rows, false);
 
         List<Integer> select = new ArrayList<Integer>(2);
         select.add(1);

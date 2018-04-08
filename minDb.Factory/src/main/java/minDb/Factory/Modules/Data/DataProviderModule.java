@@ -4,6 +4,7 @@ import com.google.inject.AbstractModule;
 
 import minDb.Core.Components.IInsertQueryExecutor;
 import minDb.Core.Components.ISelectQueryExecutor;
+import minDb.Core.Components.IUpdateQueryExecutor;
 import minDb.Core.Components.Data.IRawTableReader;
 import minDb.Core.Components.Data.IRawTableWriter;
 import minDb.Core.Components.Data.ITableFileProvider;
@@ -26,5 +27,6 @@ public class DataProviderModule extends AbstractModule {
 		
 		bind(ISelectQueryExecutor.class).toProvider(SelectExecutorProvider.class);
 		bind(IInsertQueryExecutor.class).toProvider(InsertExecutorProvider.class);
+		bind(IUpdateQueryExecutor.class).toProvider(UpdateExecutorProvider.class);
 	}    
 }

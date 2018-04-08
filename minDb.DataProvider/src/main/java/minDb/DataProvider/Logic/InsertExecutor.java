@@ -1,5 +1,8 @@
 package minDb.DataProvider.Logic;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import minDb.Core.Components.IInsertQueryExecutor;
 import minDb.Core.Components.Data.IRawTableWriter;
 import minDb.Core.Components.Data.ITableFileProvider;
@@ -35,6 +38,9 @@ public class InsertExecutor implements IInsertQueryExecutor {
 
         //TODO Columns validation
 
-        _writer.writeTo(tableInfo, _tableFileProvider.getTableFile(tableInfo.get_tableName(), dbFolder, true), insert.get_insertValues());
+        List<List<Object>> rows = new ArrayList<List<Object>>();
+        rows.add(insert.get_insertValues());
+
+        _writer.writeTo(tableInfo, _tableFileProvider.getTableFile(tableInfo.get_tableName(), dbFolder, true), rows, true);
     }    
 }

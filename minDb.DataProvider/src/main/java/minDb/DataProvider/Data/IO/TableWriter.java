@@ -21,66 +21,68 @@ import minDb.Core.MetaInfo.TableMetaInfo;
  * TableWriter
  */
 public class TableWriter extends BaseIOProcessor implements IRawTableWriter {
- 
+
     public TableWriter(ITypeSizeProvider typeSizeProvider) {
         super(typeSizeProvider);
     }
 
-    public void writeTo(TableMetaInfo tableInfo, File tableFile, List<Object> insertValues) throws ValidationException {
-        BufferedOutputStream file; 
+    public void writeTo(TableMetaInfo tableInfo, File tableFile, List<List<Object>> data, boolean append) throws ValidationException {
+        BufferedOutputStream file;
         try {
-            file = new BufferedOutputStream(new FileOutputStream(tableFile, true));
+            file = new BufferedOutputStream(new FileOutputStream(tableFile, append));
         } catch (FileNotFoundException e1) {
             throw new ValidationException("Table file not found");
         }
 
         try {
-            BitSet bs = getRowNullsInfo(tableInfo, insertValues);
-            byte[] nullsInfo = bs.toByteArray();
-            
-            int[] offsetTable = getOffsetTable(tableInfo);
-            
-            int rowSize = offsetTable[offsetTable.length - 1];
-            
-            byte[] row = new byte[rowSize];
-            ByteBuffer buffer = ByteBuffer.wrap(row);
-            buffer.put(nullsInfo);
-            
-            for (int i = 0; i < insertValues.size(); ++i) {
-                Object value = insertValues.get(i);
+            for (List<Object> insertValues : data) {
+                BitSet bs = getRowNullsInfo(tableInfo, insertValues);
+                byte[] nullsInfo = bs.toByteArray();
 
-                if (value == null) {
-                    continue;
-                }
-                ColumnType columnType = tableInfo.get_columnsInfo().get(i).get_columnType();
+                int[] offsetTable = getOffsetTable(tableInfo);
 
-                int off = offsetTable[i];
-                buffer.position(off);
-                if (columnType.get_type() == Type.DOUBLE) {
-                    Double d = (Double) value;
-                    buffer.putDouble(d);
-                } else if (columnType.get_type() == Type.VARCHAR) {
-                    String str = (String) value;
-                    byte[] bytes = str.getBytes(StandardCharsets.UTF_8);
-                    byte length = (byte)bytes.length;
-                    buffer.put(length);         
-                    buffer.put(bytes);
-                } else if (columnType.get_type() == Type.INT) {
-                    Integer integer = ((Number)value).intValue();
-                    buffer.putInt(integer);
-                } else {
-                    throw new ValidationException("Unsupported");
+                int rowSize = offsetTable[offsetTable.length - 1];
+
+                byte[] row = new byte[rowSize];
+                ByteBuffer buffer = ByteBuffer.wrap(row);
+                buffer.put(nullsInfo);
+
+                for (int i = 0; i < insertValues.size(); ++i) {
+                    Object value = insertValues.get(i);
+
+                    if (value == null) {
+                        continue;
+                    }
+                    ColumnType columnType = tableInfo.get_columnsInfo().get(i).get_columnType();
+
+                    int off = offsetTable[i];
+                    buffer.position(off);
+                    if (columnType.get_type() == Type.DOUBLE) {
+                        Double d = (Double) value;
+                        buffer.putDouble(d);
+                    } else if (columnType.get_type() == Type.VARCHAR) {
+                        String str = (String) value;
+                        byte[] bytes = str.getBytes(StandardCharsets.UTF_8);
+                        byte length = (byte) bytes.length;
+                        buffer.put(length);
+                        buffer.put(bytes);
+                    } else if (columnType.get_type() == Type.INT) {
+                        Integer integer = ((Number) value).intValue();
+                        buffer.putInt(integer);
+                    } else {
+                        throw new ValidationException("Unsupported");
+                    }
                 }
+                file.write(row);
             }
-            file.write(row);
             file.flush();
         } catch (IOException e) {
-            throw new ValidationException("Error during read table. " + e.getMessage());
+            throw new ValidationException("Error during write table. " + e.getMessage());
         } finally {
             try {
                 file.close();
             } catch (IOException e) {
-                throw new ValidationException("Error during read table. " + e.getMessage());
+                throw new ValidationException("Error during write table. " + e.getMessage());
             }
         }
     }
@@ -89,8 +91,7 @@ public class TableWriter extends BaseIOProcessor implements IRawTableWriter {
         BitSet bs = new BitSet(values.size());
 
         for (int i = 0; i < values.size(); ++i) {
-            if(values.get(i) == null)
-            {
+            if (values.get(i) == null) {
                 bs.set(i);
             }
         }

@@ -10,5 +10,5 @@ import minDb.Core.MetaInfo.TableMetaInfo;
  * ITableWriter
  */
 public interface IRawTableWriter {
-    void writeTo(TableMetaInfo tableInfo, File tableFile, List<Object> values) throws ValidationException;
+    void writeTo(TableMetaInfo tableInfo, File tableFile, List<List<Object>> values, boolean append) throws ValidationException;
 }

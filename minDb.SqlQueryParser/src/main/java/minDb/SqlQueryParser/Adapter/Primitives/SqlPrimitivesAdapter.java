@@ -86,10 +86,10 @@ public class SqlPrimitivesAdapter implements IPrimitivesAdapter {
 		net.sf.jsqlparser.expression.Expression columnExpression = function.getParameters().getExpressions().stream().findFirst().orElse(null);
         
         if (columnExpression instanceof net.sf.jsqlparser.schema.Column) {
-            throw new ValidationException("Agregation is not finished");            
+            throw new ValidationException("Agregation has not finished");            
             //return getColumn((net.sf.jsqlparser.schema.Column)columnExpression, tables);
         } else {
-            throw new ValidationException("Agregation is not column columnExpression");
+            throw new ValidationException("Agregation has not column columnExpression");
         }
 	}    
 }

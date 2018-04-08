@@ -198,17 +198,12 @@ public class SqlQueryParserTests {
     }
 
     @Test
-    public void WhereAndTest_WithJoin()
+    public void WhereAndTest_WithJoin() throws ValidationException
     {
         String insertQuery = "select * from Account r join Info i on i.Id = r.Df where i.Id <> 23 and r.Surname > 'HAHA'";
 
         SelectQuery q = null;
-		try {
-			q = parser.parse(insertQuery).get_select();
-		} catch (ValidationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        q = parser.parse(insertQuery).get_select();
 
         LogicalCondition and = (LogicalCondition) q.get_where();
         ValueColumnCondition left = (ValueColumnCondition) and.get_leftCondition();

@@ -3,8 +3,6 @@ package minDb.SqlQueryParser;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.omg.PortableServer.ThreadPolicy;
-
 import minDb.Core.Components.IQueryParser;
 import minDb.Core.Exceptions.ValidationException;
 import minDb.Core.MetaInfo.ColumnMetaInfo;
@@ -23,7 +21,6 @@ import minDb.SqlQueryParser.Adapter.Select.ISelectAdapter;
 import minDb.SqlQueryParser.Adapter.Select.IWhereConditionAdapter;
 import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.expression.Expression;
-import net.sf.jsqlparser.expression.ExpressionVisitor;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
 import net.sf.jsqlparser.statement.Statement;
 import net.sf.jsqlparser.statement.create.table.CreateTable;
