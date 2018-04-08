@@ -15,8 +15,7 @@ public class TableFileProvider implements ITableFileProvider {
 
     @Override
     public File getTableFile(String name, String dbFolder, Boolean createIfNotExists) throws ValidationException {
-        Path fullFilePath = Paths.get(dbFolder, name + ".tb");
-        File tableFile = new File(fullFilePath.toUri());
+        File tableFile = getFile(name, dbFolder);
 
         if (!tableFile.exists()) {
             if (createIfNotExists) {
@@ -31,4 +30,21 @@ public class TableFileProvider implements ITableFileProvider {
         }
         return tableFile;
     }
+    
+    @Override
+    public void delete(String name, String dbFolder) throws ValidationException {
+        File file = getFile(name, dbFolder);
+        
+        if(!file.exists())
+        {
+            throw new ValidationException("Table file not exists");
+        }
+        file.delete();
+    }
+
+	private File getFile(String name, String dbFolder) {
+		Path fullFilePath = Paths.get(dbFolder, name + ".tb");
+        File tableFile = new File(fullFilePath.toUri());
+		return tableFile;
+	}
 }

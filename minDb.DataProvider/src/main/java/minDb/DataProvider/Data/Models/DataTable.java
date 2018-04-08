@@ -81,7 +81,6 @@ public class DataTable implements IDataTable {
 		return _header.indexOf(column);
 	}
 
-	@Override
 	public void filter(ICondition condition) throws ValidationException {
 		if (condition == null) {
 			return;
@@ -108,7 +107,6 @@ public class DataTable implements IDataTable {
 		return true;
 	}
 
-	@Override
 	public void select(List<SelectColumn> selectColumns) throws ValidationException {
 		try {
 			if (selectColumns.isEmpty()) {

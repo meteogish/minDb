@@ -3,6 +3,7 @@ package minDb.DataProvider.Logic;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import minDb.Core.Components.ISelectQueryExecutor;
 import minDb.Core.Components.Data.IDataTable;
@@ -49,7 +50,7 @@ public class SelectExecutor implements ISelectQueryExecutor {
 
     private DataTable readTable(Table table, DatabaseMetaInfo dbInfo, SelectQuery selectQuery, String dbFolder)
             throws ValidationException {
-        TableMetaInfo tableInfo = getTableMetaInfo(dbInfo, table.get_name());
+        TableMetaInfo tableInfo = dbInfo.getTableMetaInfo(table.get_name());
         File tableFile = _tableFileProvider.getTableFile(tableInfo.get_tableName(), dbFolder, false);
         List<Column> usedColumns = getAllUsedColumns(selectQuery, table);
         List<List<Object>> data = null;
@@ -86,15 +87,6 @@ public class SelectExecutor implements ISelectQueryExecutor {
             }
         }
         return indexes;
-    }
-
-    private TableMetaInfo getTableMetaInfo(DatabaseMetaInfo dbInfo, String tableName) throws ValidationException {
-        TableMetaInfo table = dbInfo.get_tables().stream().filter(t -> t.get_tableName().equalsIgnoreCase(tableName))
-                .findFirst().get();
-        if (table == null) {
-            throw new ValidationException("Can not find table " + tableName + " in the db");
-        }
-        return table;
     }
 
     private List<Column> getAllUsedColumns(SelectQuery selectQuery, Table table) throws ValidationException {

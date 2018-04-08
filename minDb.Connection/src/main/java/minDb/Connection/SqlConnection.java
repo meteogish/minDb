@@ -12,8 +12,10 @@ import minDb.Core.Components.IMetaInfoRepository;
 import minDb.Core.Components.IQueryParser;
 import minDb.Core.Components.ISelectQueryExecutor;
 import minDb.Core.Components.Data.IDataTable;
+import minDb.Core.Components.Data.ITableFileProvider;
 import minDb.Core.Exceptions.ValidationException;
 import minDb.Core.MetaInfo.DatabaseMetaInfo;
+import minDb.Core.MetaInfo.TableMetaInfo;
 import minDb.Core.QueryModels.Queries.Query;
 import minDb.Core.QueryModels.Queries.Query.QueryType;
 import minDb.Extensions.StringExtenstions;
@@ -27,19 +29,21 @@ public class SqlConnection implements IDbConnection {
     private IMetaInfoRepository _metaInfoRepository;
     private ISelectQueryExecutor _selectQueryExecutor;
     private IInsertQueryExecutor _insertQueryExecutor;
+    private ITableFileProvider _tableFileProvider; 
 
-    private String _folderPath;
+    private String _dbFolder;
     private String _dbName;
 
     private File _dbFile;
     DatabaseMetaInfo _dbInfo;
 
     public SqlConnection(IQueryParser queryParser, IMetaInfoRepository metaInfoRepository,
-            ISelectQueryExecutor selectQueryExecutor, IInsertQueryExecutor insertQueryExecutor) {
+            ISelectQueryExecutor selectQueryExecutor, IInsertQueryExecutor insertQueryExecutor, ITableFileProvider tableFileProvider) {
         _queryParser = queryParser;
         _metaInfoRepository = metaInfoRepository;
         _selectQueryExecutor = selectQueryExecutor;
         _insertQueryExecutor = insertQueryExecutor;
+        _tableFileProvider = tableFileProvider;
         _status = ConnectionStatus.Closed;
     }
 
@@ -69,7 +73,7 @@ public class SqlConnection implements IDbConnection {
             dbFile = files[0];
         }
         _dbInfo = _metaInfoRepository.getDatabaseMetaInfo(dbFile);
-        _folderPath = dbFile.getParent();
+        _dbFolder = dbFile.getParent();
         _status = ConnectionStatus.Open;
     }
 
@@ -80,33 +84,44 @@ public class SqlConnection implements IDbConnection {
             {
                 String dbPath = useDatabaseQuery(strQuery);
                 connect(dbPath);
+                return new ConnectionFeedback("Connected to db");
             }
             else if(isCreateDatabaseQuery(strQuery))
             {
                 createDatabase(strQuery);
+                return new ConnectionFeedback("Created db " + _dbName);                
             }           
             else
             {
                 throw new ValidationException("Connection not open. Please input 'use' or 'create database' query.");
             }
-            return null;
         }
 
         Query query = _queryParser.parse(strQuery);
         if(query.get_type() == QueryType.Select)
         {
-            return _selectQueryExecutor.execute(query.get_select(), _dbInfo, _folderPath);
+            return _selectQueryExecutor.execute(query.get_select(), _dbInfo, _dbFolder);
         }
         else if(query.get_type() == QueryType.Insert)
         {
-            _insertQueryExecutor.execute(query.get_insert(), _dbInfo, _folderPath);
+            _insertQueryExecutor.execute(query.get_insert(), _dbInfo, _dbFolder);
+            return new ConnectionFeedback("Succesfull insert.");            
         }
         else if(query.get_type() == QueryType.CreateTable)
         {
             _dbInfo.createtable(query.get_createTableInfo());
             _status = ConnectionStatus.New;
+            return new ConnectionFeedback("Table created succesfully.");                        
         }
-        return null;
+        else if(query.get_type() == QueryType.DropTable)
+        {
+            TableMetaInfo table = _dbInfo.getTableMetaInfo(query.get_dropTable().get_name());
+            _tableFileProvider.delete(table.get_tableName(), _dbFolder);
+            _dbInfo.dropTable(table);
+            _status = ConnectionStatus.New;
+            return new ConnectionFeedback("Table droped succesfully.");            
+        }
+        throw new ValidationException("Unsupported query behavior.");
     }
 
     private void createDatabase(String query) throws ValidationException {
@@ -118,7 +133,7 @@ public class SqlConnection implements IDbConnection {
         dbName = dbName.trim();
         File dbFolder = new File("./");
 
-        _folderPath = dbFolder.getAbsolutePath();
+        _dbFolder = dbFolder.getAbsolutePath();
         _dbName = dbName;
         _dbInfo = new DatabaseMetaInfo();
         _status = ConnectionStatus.New;
@@ -148,7 +163,7 @@ public class SqlConnection implements IDbConnection {
                 }
                 else
                 {
-                    _metaInfoRepository.saveDatabaseMetaInfo(_dbInfo, _folderPath, _dbName);
+                    _metaInfoRepository.saveDatabaseMetaInfo(_dbInfo, _dbFolder, _dbName);
                 }
 			} catch (ValidationException e) {
 				throw new IOException(e.getMessage());
@@ -157,6 +172,6 @@ public class SqlConnection implements IDbConnection {
         _status = ConnectionStatus.Closed;
         _dbFile = null;
         _dbInfo = null;
-        _folderPath = null;
+        _dbFolder = null;
 	}
 }

@@ -8,5 +8,6 @@ import minDb.Core.Exceptions.ValidationException;
  * ITableFileProvider
  */
 public interface ITableFileProvider {
-    File getTableFile(String name, String dbFolder, Boolean createIfNotExists) throws ValidationException;    
+    File getTableFile(String name, String dbFolder, Boolean createIfNotExists) throws ValidationException;
+    void delete(String name, String dbfolder) throws ValidationException;   
 }

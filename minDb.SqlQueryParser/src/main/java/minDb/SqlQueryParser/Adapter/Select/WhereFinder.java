@@ -46,7 +46,7 @@ public class WhereFinder implements IWhereConditionAdapter {
         }
     }
 
-    private ICondition analyzeExpresion(net.sf.jsqlparser.expression.Expression expression, List<Table> tablesUsed)
+    public ICondition analyzeExpresion(net.sf.jsqlparser.expression.Expression expression, List<Table> tablesUsed)
             throws ValidationException {
         if (expression instanceof AndExpression) {
             AndExpression and = (AndExpression) expression;

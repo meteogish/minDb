@@ -11,5 +11,6 @@ import net.sf.jsqlparser.statement.select.PlainSelect;
  interface IWhereConditionAdapter
  */
 public interface IWhereConditionAdapter {
-    ICondition getWhereCondition(PlainSelect select, List<Table> tablesUsed) throws ValidationException;    
+    ICondition getWhereCondition(PlainSelect select, List<Table> tablesUsed) throws ValidationException;
+    ICondition analyzeExpresion(net.sf.jsqlparser.expression.Expression expression, List<Table> tablesUsed)  throws ValidationException;    
 }

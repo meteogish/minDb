@@ -3,6 +3,7 @@ package minDb.QueryParser;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,6 +16,7 @@ import minDb.Core.Exceptions.ValidationException;
 import minDb.Core.MetaInfo.ColumnMetaInfo;
 import minDb.Core.MetaInfo.ColumnType;
 import minDb.Core.MetaInfo.TableMetaInfo;
+import minDb.Core.QueryModels.Column;
 import minDb.Core.QueryModels.Join;
 import minDb.Core.QueryModels.SelectColumn;
 import minDb.Core.QueryModels.Table;
@@ -24,6 +26,7 @@ import minDb.Core.QueryModels.Conditions.ValueColumnCondition;
 import minDb.Core.QueryModels.Queries.InsertQuery;
 import minDb.Core.QueryModels.Queries.Query;
 import minDb.Core.QueryModels.Queries.SelectQuery;
+import minDb.Core.QueryModels.Queries.Query.QueryType;
 import minDb.SqlQueryParser.QueryParser;
 import minDb.SqlQueryParser.Adapter.Create.CreateQueryFinder;
 import minDb.SqlQueryParser.Adapter.Insert.InsertQueryFinder;
@@ -247,5 +250,48 @@ public class SqlQueryParserTests {
         assertEquals("Surname", right.get_leftColumn().get_name());
         assertEquals("Account", right.get_leftColumn().get_table().get_name());
         assertNull(right.get_value());
+    }
+
+    @Test
+    public void DropTable_Test() throws ValidationException
+    {
+        String query = "drop table Accounts";
+
+        Query q = parser.parse(query);
+
+        assertEquals(q.get_type(), QueryType.DropTable);
+        assertEquals(q.get_dropTable().get_name(), "Accounts");
+    }
+
+    @Test
+    public void Update_Test() throws ValidationException
+    {
+        String statement = "update Accounts set Salary = 250, Amount = 34 where Id = 3";
+        List<Column> expectedColumns = new ArrayList<Column>();
+        expectedColumns.add(new Column("Salary"));
+        expectedColumns.add(new Column("Amount"));
+        
+        List<Object> expectedValues = new ArrayList<Object>();
+        expectedValues.add(250L);
+        expectedValues.add(34L);
+        
+        Query q = parser.parse(statement);
+
+        assertEquals(q.get_type(), QueryType.Update);
+        List<Column> actualColumns = q.get_update().get_updateColumns();
+        List<Object> actualValues = q.get_update().get_values();
+        
+        assertEquals(expectedColumns.size(), actualColumns.size());
+        assertEquals(expectedValues.size(), actualValues.size());
+        
+        for (int i = 0; i < expectedColumns.size(); ++i) {
+            assertEquals(expectedColumns.get(i).get_name(), actualColumns.get(i).get_name());
+        }
+        
+        for (int i = 0; i < expectedValues.size(); ++i) {
+            assertEquals(expectedValues.get(i), actualValues.get(i));
+        }
+
+        assertTrue(q.get_update().get_where() instanceof ValueColumnCondition);
     }
 }

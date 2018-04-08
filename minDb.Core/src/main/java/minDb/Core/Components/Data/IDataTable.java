@@ -11,6 +11,4 @@ import minDb.Core.QueryModels.Conditions.ICondition;
  */
 public interface IDataTable {
     void print();
-    void select(List<SelectColumn> selectColumns) throws ValidationException;
-    void filter(ICondition condition)  throws ValidationException;
 }
